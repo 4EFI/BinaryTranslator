@@ -566,7 +566,7 @@ void* CanaryRecalloc (void* data, size_t size, uint64_t leftCanary, uint64_t rig
 
 void* Recalloc (void* data, size_t size, int curSize)
 {   
-    if (curSize == 0) curSize = MallocSize (data);
+    if (curSize == 0) curSize = MallocSize( data );
     if (curSize <  0) curSize = 0;
 
     if (size_t(curSize) == size) return data;
