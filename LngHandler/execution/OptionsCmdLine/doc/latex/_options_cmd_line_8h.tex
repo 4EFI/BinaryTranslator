@@ -1,0 +1,66 @@
+\hypertarget{_options_cmd_line_8h}{}\doxysection{X\+:/\+Options\+Cmd\+Line/\+Options\+Cmd\+Line.h File Reference}
+\label{_options_cmd_line_8h}\index{X:/OptionsCmdLine/OptionsCmdLine.h@{X:/OptionsCmdLine/OptionsCmdLine.h}}
+\doxysubsection*{Classes}
+\begin{DoxyCompactItemize}
+\item 
+struct \mbox{\hyperlink{struct_option}{Option}}
+\begin{DoxyCompactList}\small\item\em Структура одной опции \end{DoxyCompactList}\end{DoxyCompactItemize}
+\doxysubsection*{Functions}
+\begin{DoxyCompactItemize}
+\item 
+int \mbox{\hyperlink{_options_cmd_line_8h_ac28fcdcd152afad76c42eb0a3cd2808e}{Process\+Command\+Line}} (int argc, const char $\ast$argv\mbox{[}$\,$\mbox{]}, int num\+Options, const \mbox{\hyperlink{struct_option}{Option}} options\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Функция обработки опций командной строки \end{DoxyCompactList}\item 
+int \mbox{\hyperlink{_options_cmd_line_8h_af3bc530b26c718bcfa7df2bac48f4050}{Num\+Word\+In\+Array}} (const char $\ast$word, int size\+Arr, const char $\ast$arr\mbox{[}$\,$\mbox{]})
+\begin{DoxyCompactList}\small\item\em Функция для поиска слова в массиве строк \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Function Documentation}
+\mbox{\Hypertarget{_options_cmd_line_8h_af3bc530b26c718bcfa7df2bac48f4050}\label{_options_cmd_line_8h_af3bc530b26c718bcfa7df2bac48f4050}} 
+\index{OptionsCmdLine.h@{OptionsCmdLine.h}!NumWordInArray@{NumWordInArray}}
+\index{NumWordInArray@{NumWordInArray}!OptionsCmdLine.h@{OptionsCmdLine.h}}
+\doxysubsubsection{\texorpdfstring{NumWordInArray()}{NumWordInArray()}}
+{\footnotesize\ttfamily int Num\+Word\+In\+Array (\begin{DoxyParamCaption}\item[{const char $\ast$}]{word,  }\item[{int}]{size\+Arr,  }\item[{const char $\ast$}]{arr\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Функция для поиска слова в массиве строк 
+
+
+\begin{DoxyParams}{Parameters}
+{\em word} & Слово, которое нужно найти \\
+\hline
+{\em size\+Arr} & Количество строк для поиска \\
+\hline
+{\em arr} & Массив строк\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Возвращает индекс данного слова в массиве, если данное слово не найдено возвращается -\/1. 
+\end{DoxyReturn}
+\mbox{\Hypertarget{_options_cmd_line_8h_ac28fcdcd152afad76c42eb0a3cd2808e}\label{_options_cmd_line_8h_ac28fcdcd152afad76c42eb0a3cd2808e}} 
+\index{OptionsCmdLine.h@{OptionsCmdLine.h}!ProcessCommandLine@{ProcessCommandLine}}
+\index{ProcessCommandLine@{ProcessCommandLine}!OptionsCmdLine.h@{OptionsCmdLine.h}}
+\doxysubsubsection{\texorpdfstring{ProcessCommandLine()}{ProcessCommandLine()}}
+{\footnotesize\ttfamily int Process\+Command\+Line (\begin{DoxyParamCaption}\item[{int}]{argc,  }\item[{const char $\ast$}]{argv\mbox{[}$\,$\mbox{]},  }\item[{int}]{num\+Options,  }\item[{const \mbox{\hyperlink{struct_option}{Option}}}]{options\mbox{[}$\,$\mbox{]} }\end{DoxyParamCaption})}
+
+
+
+Функция обработки опций командной строки 
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Количество аргументов командной строки (все аргументы, включая нулевой) \\
+\hline
+{\em argv\mbox{[}$\,$\mbox{]}} & Аргументы командной строки \\
+\hline
+{\em num\+Options} & Количество опций \\
+\hline
+{\em options\mbox{[}$\,$\mbox{]}} & Опции (типа \mbox{\hyperlink{struct_option}{Option}})\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Возвращает тоже самое, что и \mbox{\hyperlink{struct_option_abbf99d5db487b9904dd93e586d409eec}{Option.\+func}} в том случае, если возвращаемое значение меньше 0. Иначе возвращается 0.
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Возвращается первое встреченное отрицательное число, если такое существует. 
+\end{DoxyNote}

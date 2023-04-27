@@ -1,0 +1,55 @@
+\hypertarget{struct_option}{}\doxysection{Option Struct Reference}
+\label{struct_option}\index{Option@{Option}}
+
+
+Структура одной опции  
+
+
+
+
+{\ttfamily \#include $<$Options\+Cmd\+Line.\+h$>$}
+
+\doxysubsection*{Public Attributes}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{struct_option_a8aae24492e599aeb657d5f953044196c}\label{struct_option_a8aae24492e599aeb657d5f953044196c}} 
+char $\ast$ {\bfseries name}
+\begin{DoxyCompactList}\small\item\em Название опции \end{DoxyCompactList}\item 
+int($\ast$ \mbox{\hyperlink{struct_option_abbf99d5db487b9904dd93e586d409eec}{func}} )(int argc, const char $\ast$argv\mbox{[}$\,$\mbox{]}, int pos)
+\begin{DoxyCompactList}\small\item\em функция, которая вызывается для определенной опции \end{DoxyCompactList}\end{DoxyCompactItemize}
+
+
+\doxysubsection{Detailed Description}
+Структура одной опции 
+
+\doxysubsection{Member Data Documentation}
+\mbox{\Hypertarget{struct_option_abbf99d5db487b9904dd93e586d409eec}\label{struct_option_abbf99d5db487b9904dd93e586d409eec}} 
+\index{Option@{Option}!func@{func}}
+\index{func@{func}!Option@{Option}}
+\doxysubsubsection{\texorpdfstring{func}{func}}
+{\footnotesize\ttfamily int($\ast$ Option\+::func) (int argc, const char $\ast$argv\mbox{[}$\,$\mbox{]}, int pos)}
+
+
+
+функция, которая вызывается для определенной опции 
+
+
+\begin{DoxyParams}{Parameters}
+{\em argc} & Количество аргументов командной строки \\
+\hline
+{\em argv\mbox{[}$\,$\mbox{]}} & Аргументы командной строки \\
+\hline
+{\em pos} & Индекс текущего аргумента\\
+\hline
+\end{DoxyParams}
+\begin{DoxyReturn}{Returns}
+Возвращает количество аргументов, которое стоит пропустить при обработки следующих опций
+\end{DoxyReturn}
+\begin{DoxyNote}{Note}
+Чтобы завершить процесс обработки опций, нужно вернуть отрицательное число. Советую возвращать отрицальное значение текущего аргумента, если хотите завершить процесс обработки опций. 
+\end{DoxyNote}
+
+
+The documentation for this struct was generated from the following file\+:\begin{DoxyCompactItemize}
+\item 
+X\+:/\+Options\+Cmd\+Line/\mbox{\hyperlink{_options_cmd_line_8h}{Options\+Cmd\+Line.\+h}}\end{DoxyCompactItemize}
