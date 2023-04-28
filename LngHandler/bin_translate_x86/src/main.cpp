@@ -3,6 +3,7 @@
 #include <stdlib.h>
 
 #include "commands.h"
+#include "bin_trtor.h"
 
 //-----------------------------------------------------------------------------
 

@@ -3,6 +3,11 @@
 
 //-----------------------------------------------------------------------------
 
+const char* Signature = "SP";
+const int   Version   = 1;
+
+const int   SignatureBlockSize = 10;
+
 enum RegNum
 {
     R0X = 0,
@@ -42,5 +47,11 @@ struct BinTrtor
 
 int BinTrtorCtor( BinTrtor* bin_trtor, const char* bin_code );
 int BinTrtorDtor( BinTrtor* bin_trtor );
+
+int BinTrtorParseBinCode( BinTrtor* bin_trtor );
+
+//-----------------------------------------------------------------------------
+
+int CheckBinCodeSignature( const char* bin_code );
 
 //-----------------------------------------------------------------------------
