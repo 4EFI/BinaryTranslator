@@ -47,7 +47,41 @@ int AsmGetCmds( ASM* asm_s, FILE* fileIn )
 
 //-----------------------------------------------------------------------------
 
-int AsmMakeArrCmds( ASM* asm_s )
+int FillListingFile( FILE* listing_file, const char* str, const char* code, CMD* cmd, int ip )
+{
+    if( !listing_file ) return 0;
+        
+    fprintf( listing_file, "%010X | %02X ", ip++, *cmd );
+
+    int num_skips = 0;
+    
+    if( cmd->immed )
+    {    
+        for( int i = 0; i < sizeof( Elem_t ); i++ )
+        {
+            fprintf( listing_file, "%02X", ( u_char )code[ip + i] );
+        }
+            
+        ip += sizeof( Elem_t );         
+
+        fprintf( listing_file, " " );      
+    }
+    else num_skips += ( 2 * sizeof( Elem_t ) + 1 );
+    
+
+    if( cmd->reg )
+    {
+        fprintf( listing_file, "%02X ", code[ip] ); ip++;               
+    }
+    else num_skips += 3;
+    
+
+    fprintf( listing_file, "%*s %s\n", num_skips + 10, " ", str );
+ 
+    return 1;
+}
+
+int AsmMakeArrCmds( ASM* asm_s, FILE* listing_file )
 {   
     if( asm_s == NULL ) return 0;
     
@@ -74,14 +108,16 @@ int AsmMakeArrCmds( ASM* asm_s )
         // Command handler
         CMD* cmd = (CMD*)(&asm_s->code[ip]);
         
+        int old_ip = ip;
         AsmArgHandler( asm_s, strForRead + numReadSyms /*Str for read from*/, &ip );
 
         // Compare commands
-        #define DEF_CMD( NAME, NUM, ... )            \
-            if( strcasecmp( cmdName, #NAME ) == 0 )  \
-            {                                        \
-                cmd->code = NUM;                     \
-            }                                        \
+        #define DEF_CMD( NAME, NUM, ... )                                                   \
+            if( strcasecmp( cmdName, #NAME ) == 0 )                                         \
+            {                                                                               \
+                cmd->code = NUM;                                                            \
+                FillListingFile( listing_file, strForRead, asm_s->code, cmd, old_ip );      \
+            }                                                                               \
             else
 
         #include "commands.h"

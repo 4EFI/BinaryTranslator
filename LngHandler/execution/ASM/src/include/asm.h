@@ -32,7 +32,7 @@ int AsmGetCmds       ( ASM* asm_s, FILE* fileIn );
 int AsmLabelHandler  ( ASM* asm_s, const char* strForRead, int  ip );
 int AsmArgJumpHandler( ASM* asm_s, const char* strForRead, int* ip );
 int AsmArgHandler    ( ASM* asm_s, const char* strForRead, int* ip );
-int AsmMakeArrCmds   ( ASM* asm_s) ;
+int AsmMakeArrCmds   ( ASM* asm_s, FILE* listing_file );
 int AsmMakeBinFile   ( ASM* asm_s, FILE* fileOut );
 
 int GetLabelIndex     ( Label labels[], int numLabels, const char* str, int len );

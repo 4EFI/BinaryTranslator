@@ -36,13 +36,21 @@ int main( int argc, const char* argv[] )
 
     AsmGetCmds( &asm_s, fileIn );
 
+    char     listing_file_name[MaxStrLen] = "";
+    sprintf( listing_file_name, "%s.lst", argv[1] );
+
+    FILE*   listing_file = fopen( listing_file_name, "w" );
+
+    printf( "'%s'\n", listing_file_name );
+    
     for( int i = 0; i < 2; i++ ) 
     {
-        if( AsmMakeArrCmds( &asm_s ) == -1 ) return -1;
+        if( AsmMakeArrCmds( &asm_s, i == 1 ? listing_file : NULL ) == -1 ) return -1;
     }
 
     AsmMakeBinFile( &asm_s, fileOut );
 
+    fclose( listing_file );
     fclose( fileIn );
     fclose( fileOut );
 }
