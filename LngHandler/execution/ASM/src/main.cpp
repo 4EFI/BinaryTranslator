@@ -15,7 +15,7 @@ int main( int argc, const char* argv[] )
     FILE* fileOut = NULL;
  
     // No input file name
-    if( argc <= 1 ) 
+    if( argc < 1 ) 
     {
         printf( "To few arguments...\n" );
         return -1;
