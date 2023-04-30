@@ -35,8 +35,8 @@ struct Command
 
 struct BinTrtor
 {
-    char*  bin_code;
-    size_t bin_code_size;
+    const char* bin_code;
+    size_t      bin_code_size;
 
     size_t num_cmds;
 
