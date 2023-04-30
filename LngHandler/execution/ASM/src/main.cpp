@@ -31,7 +31,7 @@ int main( int argc, const char* argv[] )
 
     if( !fileOut ) fileOut = fopen( "a.code", "wb" );
 
-    ASM asm_s = { 0 };
+    ASM asm_s = {};
     AsmCtor( &asm_s );
 
     AsmGetCmds( &asm_s, fileIn );

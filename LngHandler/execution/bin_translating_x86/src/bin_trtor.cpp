@@ -80,6 +80,37 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
     return 1;
 }
 
+int BinTrtorToX86( BinTrtor* bin_trtor )
+{
+    for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
+    {
+        CMD* cmd = &bin_trtor->commands[i].cmd;   
+    
+        // Elem_t  arg_val = 0;
+        // Elem_t* arg_ptr = CpuGetArg( cpu, &ip, &arg_val );
+
+        #define BT
+        #define DEF_CMD( NAME, NUM, ... ) \
+            case CMD_##NAME:              \
+                __VA_ARGS__               \
+                break;
+
+        switch( cmd->code )
+        {
+            #include "commands.h"
+            default:
+                printf( "SIGILL\n" );
+                return -1;
+                break;
+        }
+
+        #undef DEF_CMD
+        #undef BT
+    }
+    
+    return 1;
+}
+
 //-----------------------------------------------------------------------------
 
 int CheckBinCodeSignature( const char* bin_code )
