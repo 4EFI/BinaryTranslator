@@ -1,29 +1,9 @@
 
+#include "config.h"
+
 #include <stdio.h>
 
 //-----------------------------------------------------------------------------
-
-static const char Signature[] = "SP";
-static const int  Version     = 1;
-
-static const int  SignatureBlockSize = 10;
-
-enum RegNum
-{
-    R0X = 0,
-    RAX = 1,
-    RBX = 2,
-    RCX = 3, 
-    RDX = 4
-};
-
-struct CMD
-{
-    unsigned char code : 5;
-    unsigned char imm  : 1; 
-    unsigned char reg  : 1; 
-    unsigned char mem  : 1;
-};
 
 struct Command
 {
@@ -35,6 +15,9 @@ struct Command
 
 struct BinTrtor
 {
+    char*  bin_code_x86;
+    size_t bin_code_x86_size;
+    
     const char* bin_code;
     size_t      bin_code_size;
 

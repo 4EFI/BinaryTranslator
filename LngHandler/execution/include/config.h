@@ -33,14 +33,16 @@ struct CMD
     unsigned char memory : 1;
 };
 
-//#define ON_LOG_FILE
-//#define NHASH
-//#define NCANARY
+// #define ON_LOG_FILE
+// #define NHASH
+// #define NCANARY
 
 typedef double Elem_t;
 
 static char Signature[] = "SP"; // Super paper
 static int  Version     = 1;
+
+static int  SignatureBlockSize = 10;
 
 #define DEF_CMD( NAME, NUM, ... ) \
     CMD_##NAME = NUM, 

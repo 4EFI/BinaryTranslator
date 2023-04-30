@@ -15,6 +15,8 @@ int BinTrtorCtor( BinTrtor* bin_trtor, const char* bin_code )
     bin_trtor->bin_code = ( const char* )( bin_code + SignatureBlockSize );
     bin_trtor->num_cmds = 0;
 
+    bin_trtor->bin_code_x86 = ( char* )calloc( size * 10, sizeof( char ) );
+
     bin_trtor->bin_code_size = size;
     bin_trtor->commands      = ( Command* )calloc( bin_trtor->bin_code_size, sizeof( Command ) ); 
     
@@ -26,6 +28,9 @@ int BinTrtorCtor( BinTrtor* bin_trtor, const char* bin_code )
 int BinTrtorDtor( BinTrtor* bin_trtor )
 {
     bin_trtor->bin_code = NULL;
+
+    free( bin_trtor->bin_code_x86 );
+    bin_trtor->bin_code_x86 = NULL;
 
     free( bin_trtor->commands );
     bin_trtor->commands = NULL;
@@ -44,17 +49,15 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
     
     for( size_t i = 0; i < bin_trtor->bin_code_size; i++ )
     {        
-        int str_len =  curr_str_ptr - bin_trtor->bin_code; 
-        if( str_len == bin_trtor->bin_code_size ) break;
+        size_t str_len =  curr_str_ptr - bin_trtor->bin_code; 
+        if(    str_len == bin_trtor->bin_code_size    ) break;
         
         // get cmd 
         memcpy( &bin_trtor->commands[i].cmd, curr_str_ptr++, sizeof( char ) );
         
         CMD* cmd = &bin_trtor->commands[i].cmd;
 
-        printf( "%x\n", *cmd );
-
-        if( cmd->imm )
+        if( cmd->immed )
         {
             double   val = 0;
             memcpy( &val, curr_str_ptr, sizeof( double ) );
