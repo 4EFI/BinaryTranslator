@@ -1,11 +1,12 @@
 
 # makefile data 
 
-SRC = src/main.cpp 
+SRC =   src/main.cpp      \
+        src/bin_trtor.cpp
 
 # already compiled objects
 
-LIBS = ../LOG/lib/LOG.o
+LIBS = ../LOG/lib/LOG.o ../src/build/file_algs.o
 
 ifeq ($(OS),Windows_NT)
 	OUTPUT_FILE_NAME = ../bin/bin_translator.exe

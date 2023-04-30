@@ -3,10 +3,10 @@
 
 //-----------------------------------------------------------------------------
 
-const char* Signature = "SP";
-const int   Version   = 1;
+static const char Signature[] = "SP";
+static const int  Version     = 1;
 
-const int   SignatureBlockSize = 10;
+static const int  SignatureBlockSize = 10;
 
 enum RegNum
 {
@@ -35,9 +35,9 @@ struct Command
 
 struct BinTrtor
 {
-    char* bin_code;
-    
-    size_t max_num_cmds;
+    char*  bin_code;
+    size_t bin_code_size;
+
     size_t num_cmds;
 
     Command* commands;
