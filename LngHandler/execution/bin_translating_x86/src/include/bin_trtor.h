@@ -35,6 +35,8 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor );
 
 int BinTrtorToX86( BinTrtor* bin_trtor );
 
+int BinTrtorRun( BinTrtor* bin_trtor );
+
 //-----------------------------------------------------------------------------
 
 int CheckBinCodeSignature( const char* bin_code );

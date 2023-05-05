@@ -39,10 +39,10 @@ struct CMD
 
 typedef double Elem_t;
 
-static char Signature[] = "SP"; // Super paper
-static int  Version     = 1;
+static const char Signature[] = "SP"; // Super paper
+static const char Version     = 1;
 
-static int  SignatureBlockSize = 10;
+static int  SignatureBlockSize = 9;
 
 #define DEF_CMD( NAME, NUM, ... ) \
     CMD_##NAME = NUM, 

@@ -40,8 +40,6 @@ int main( int argc, const char* argv[] )
     sprintf( listing_file_name, "%s.lst", argv[1] );
 
     FILE*   listing_file = fopen( listing_file_name, "w" );
-
-    printf( "'%s'\n", listing_file_name );
     
     for( int i = 0; i < 2; i++ ) 
     {

@@ -22,6 +22,8 @@ int main( int argc, char* argv[] )
     BinTrtorCtor( &bin_trtor, bin_code );
 
     BinTrtorParseBinCode( &bin_trtor );
+    BinTrtorToX86       ( &bin_trtor );
+    BinTrtorRun         ( &bin_trtor );
 
     BinTrtorDtor( &bin_trtor );
 }

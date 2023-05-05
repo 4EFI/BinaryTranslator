@@ -31,7 +31,7 @@ int CpuGetCmdsArr( CPU* cpu, FILE* file )
 {
     if( file == NULL || file == NULL ) return 0;
     
-    fscanf( file, "%d ", &cpu->codeSize );
+    fread( &cpu->codeSize, sizeof( int ), 1, file );
 
     cpu->code = (char*)calloc( cpu->codeSize, sizeof( char ) );
 
@@ -187,7 +187,7 @@ int CheckCompatibility( FILE* file )
     if( file == NULL ) return 0;
 
     char signature[MaxStrLen] = "";
-    fscanf( file, "%s", signature);
+    fscanf( file, "%s ", signature);
 
     if( strcmp( Signature, signature ) != 0 )
     {
@@ -195,8 +195,9 @@ int CheckCompatibility( FILE* file )
         return 0;
     }
 
-    int version = 0;
-    fscanf( file, "%d", &version );
+    char version = 0;
+    char sym     = 0;
+    fscanf( file, "%c%c", &version, &sym );
 
     if( version != Version ) 
     {

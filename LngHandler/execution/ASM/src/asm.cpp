@@ -328,10 +328,13 @@ int AsmMakeBinFile( ASM* asm_s, FILE* fileOut )
 {   
     if( asm_s == NULL || fileOut == NULL ) return 0;
     
-    // signature, version, number of commands -> out file
-    fprintf( fileOut, "%s %d %d\n", Signature, Version, asm_s->codeSize );
+    // signature, version -> out file
+    fprintf( fileOut, "%s %c ", Signature, Version );
 
-    fwrite( asm_s->code, sizeof( char ), asm_s->codeSize, fileOut );
+    // fwrite size code
+    fwrite( &asm_s->codeSize, sizeof( char ), sizeof( int ),   fileOut );
+    // fwrite code
+    fwrite(  asm_s->code,     sizeof( char ), asm_s->codeSize, fileOut );
     
     return 1;
 }
