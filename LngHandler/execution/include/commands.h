@@ -28,11 +28,13 @@ DEF_CMD( PUSH, 1,
 {   
     if( cmd->immed )
     {
-        // mov r8, val
-        sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xb8 ); 
-        bin_code_x86_ptr += 2;
+        // mov r10, val
+        sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xbA ); PP( 2 );
         
-        VAL_TO_BIN_CODE_X86;
+        VAL_TO_BIN_CODE_X86( &BIN_TRTOR_CMD( i ).val, sizeof( double ) );
+
+        // push r10
+        sprintf( bin_code_x86_ptr, "%c%c", 0x41, 0x52 ); PP( 2 );
     }
 }
 #endif 
@@ -121,12 +123,29 @@ DEF_CMD( OUT, 6,
             val_1 = 0;
         }
 
-        printf( "%lf\n", double(val_1) );
+        printf( "%lf\n", double( val_1 ) );
     }
 }
 #else
 {
+    const char* str = "%d\n";
 
+    // mov r10, str
+    sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xba ); PP( 2 );
+
+    PTR_TO_BIN_CODE_X86( str );
+
+    sprintf( bin_code_x86_ptr, "%c%c", 0x41, 0x52 ); PP( 2 );
+
+    // mov r10, val
+    sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xba ); PP( 2 );
+    
+    PTR_TO_BIN_CODE_X86( _printf );
+
+    // call r10
+    sprintf( bin_code_x86_ptr, "%c%c%c", 0x41, 0xff, 0xd2 ); PP( 3 );
+
+    PP_SP( 16 );
 }
 #endif 
 })

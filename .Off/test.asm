@@ -1,10 +1,42 @@
 
+global main
+
+section .data
+
+string db      "%lf", 10
+val    dq       101.0
+
 section .text
-global _start
 
 ; unset GTK_PATH  // use it in cmd line if edb does not work
 
-_start:         mov  r8, 0xff00000000ff0000
+extern printf
+
+main:           mov r10, [val]
+                push r10
+                
+                movlps xmm0, [rsp]
+                cvttsd2si r10, xmm0
+                
+                push 100
+                push 20         
+
+                movlps xmm1, [rsp]
+                add rsp, 8 
+                movlps xmm0, [rsp] 
+
+                addsd xmm0, xmm1
+                movlps [rsp], xmm0
+
+                mov rsi, 0xff00000000ff0000
+
+                
+                add rsp, 16
+                sub rsp, 16
+
+                call r10
+
+                mov  r8, 0xff00000000ff0000
                 push r8
 
                 push 0xff00000000ff0000
@@ -27,3 +59,6 @@ _start:         mov  r8, 0xff00000000ff0000
                 mov rax, 0x3c
                 xor rdi, rdi
                 syscall
+
+adb:    
+    ret

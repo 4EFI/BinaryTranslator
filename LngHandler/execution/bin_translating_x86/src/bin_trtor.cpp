@@ -60,8 +60,6 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
 
         CMD* cmd = &bin_trtor->commands[i].cmd;
 
-        printf( "cmd = %d\n", *cmd );
-
         if( cmd->immed )
         {
             double   val = 0;
@@ -93,8 +91,6 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
     {
         CMD* cmd = &bin_trtor->commands[i].cmd;   
 
-        printf( "%d\n", cmd->code );
-
         #define BT
         #define DEF_CMD( NAME, NUM, ... ) \
             case CMD_##NAME:              \
@@ -114,7 +110,7 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
         #undef BT
     }
 
-    *(bin_code_x86_ptr++) = 0xC3; 
+    *(bin_code_x86_ptr++) = 0xC3; // add 'ret' to end of buffer
     
     return 1;
 }
