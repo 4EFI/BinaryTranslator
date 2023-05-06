@@ -28,9 +28,11 @@ DEF_CMD( PUSH, 1,
 {   
     if( cmd->immed )
     {
-        sprintf( bin_code_x86_ptr, "%x%x%lf", 0x49, 0xb8, BIN_TRTOR_CMD( i ).val );
-
-        bin_code_x86_ptr += ( 2 + sizeof( double ) );
+        // mov r8, val
+        sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xb8 ); 
+        bin_code_x86_ptr += 2;
+        
+        VAL_TO_BIN_CODE_X86;
     }
 }
 #endif 

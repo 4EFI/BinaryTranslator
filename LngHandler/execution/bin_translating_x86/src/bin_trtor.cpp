@@ -2,6 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <errno.h>
 #include <sys/mman.h>
 
 #include "bin_trtor.h"
@@ -17,8 +18,10 @@ int BinTrtorCtor( BinTrtor* bin_trtor, const char* bin_code )
     bin_trtor->bin_code_size = size;
     bin_trtor->num_cmds      = 0;
 
-    bin_trtor->bin_code_x86 = ( char*    )calloc( size * 10, sizeof( char    ) );
-    bin_trtor->commands     = ( Command* )calloc( size,      sizeof( Command ) ); 
+    bin_trtor->bin_code_x86_size = size * 10;
+    bin_trtor->bin_code_x86 = ( char* )aligned_alloc( PageSize, bin_trtor->bin_code_x86_size );
+
+    bin_trtor->commands = ( Command* )calloc( size, sizeof( Command ) ); 
     
     return 1;
 }
@@ -116,12 +119,13 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
 
 int BinTrtorRun( BinTrtor* bin_trtor )
 {
-    mprotect( bin_trtor->bin_code_x86, 
-              bin_trtor->bin_code_x86_size,
-              PROT_EXEC );
+    int is_prot = mprotect( bin_trtor->bin_code_x86, 
+                            bin_trtor->bin_code_x86_size,
+                            PROT_READ | PROT_WRITE | PROT_EXEC );
+    if( is_prot ) exit( errno );
 
-    void (*function)() = ( void(*)() )( bin_trtor->bin_code_x86 );
-    function();
+    void ( *exec_function )( void ) = ( void ( * )( void ) )( bin_trtor->bin_code_x86 );
+    exec_function();
 
     return 1;
 }

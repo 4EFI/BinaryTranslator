@@ -3,6 +3,8 @@
 
 //-----------------------------------------------------------------------------
 
+static int PageSize = 4096;
+
 static const int NumRegs       = 5;
 static const int NumLabels     = 1000;
 
@@ -42,7 +44,7 @@ typedef double Elem_t;
 static const char Signature[] = "SP"; // Super paper
 static const char Version     = 1;
 
-static int  SignatureBlockSize = 9;
+static int SignatureBlockSize = 9;
 
 #define DEF_CMD( NAME, NUM, ... ) \
     CMD_##NAME = NUM, 

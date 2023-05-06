@@ -10,4 +10,4 @@ all : test.asm
 bin : my.asm
 	$(AS) my.asm -o my.code
 	$(EX) my.code
-	$(BT) my.code
+	edb --run $(BT) my.code
