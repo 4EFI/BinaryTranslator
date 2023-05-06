@@ -39,6 +39,18 @@
 #define PP( NUM )               \
     bin_code_x86_ptr += ( NUM );
 
+/*
+#define BIN_PRINTF( SIZE, ... )                            \
+{                                                               \
+    for(  )
+    char* __str = ( char* )calloc( 2 * ( SIZE ), 1 );           \
+    sprintf( bin_code_x86_ptr, STR, __VA_ARGS__ ); PP( SIZE );
+}
+*/
+
+#define BIN_PRINT( SIZE, ... )                                      \
+    BinPrint( bin_code_x86_ptr, SIZE, __VA_ARGS__ ); PP( SIZE );    \
+
 #define BIN_TRTOR_CMD( i ) bin_trtor->commands[ i ]
 
 
@@ -52,13 +64,16 @@
 }
 
 
-#define PP_SP( NUM )                                                            \
-    sprintf( bin_code_x86_ptr, "%c%c%c%c", 0x48, 0x83, 0xc4, NUM ); PP( 4 );
+#define PP_SP( NUM )                        \
+    BIN_PRINT( 4, 0x48, 0x83, 0xc4, NUM );        
 
-#define MM_SP( NUM )                                                            \
-    sprintf( bin_code_x86_ptr, "%c%c%c%c", 0x48, 0x83, 0xec, NUM ); PP( 4 );
+#define MM_SP( NUM )                        \
+    BIN_PRINT( 4, 0x48, 0x83, 0xec, NUM );                         
 
 #define MOV_LPS_XMM_N( N )                                                      \
     sprintf( bin_code_x86_ptr, "%c%c%c%c", 0x0f, 0x12, 0x04, 0x24 ); PP( 4 );
+
+#define CVT_TSD_2_SI( XMM_N )                       \
+    BIN_PRINT( 5, 0xf2, 0x4c, 0x0f, 0x2c, 0xd0 );                         
 
 //-----------------------------------------------------------------------------

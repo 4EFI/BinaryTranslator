@@ -130,6 +130,11 @@ DEF_CMD( OUT, 6,
 {
     const char* str = "%d\n";
 
+    MOV_LPS_XMM_N( 0 );
+    PP_SP( 8 );
+    CVT_TSD_2_SI( 0 );
+    sprintf( bin_code_x86_ptr, "%c%c", 0x41, 0x52 ); PP( 2 );
+
     // mov r10, str
     sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xba ); PP( 2 );
 

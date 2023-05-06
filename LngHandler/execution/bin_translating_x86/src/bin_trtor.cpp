@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <stdarg.h>
 
 #include "bin_trtor.h"
 
@@ -147,6 +148,24 @@ int CheckBinCodeSignature( const char* bin_code )
     memcpy( &code_size, bin_code, sizeof( int ) );
 
     return code_size;
+}
+
+//-----------------------------------------------------------------------------
+
+int BinPrint( char* bin_code, int size, ... )
+{
+    va_list   args = {};
+    va_start( args, size );
+
+    for( int i = 0; i < size; i++ )
+    {
+        int c = va_arg( args, int );
+        bin_code[i] = char( c );
+    }
+
+    va_end( args );
+
+    return 1;
 }
 
 //-----------------------------------------------------------------------------

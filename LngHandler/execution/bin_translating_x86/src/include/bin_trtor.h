@@ -41,6 +41,8 @@ int BinTrtorRun( BinTrtor* bin_trtor );
 
 int CheckBinCodeSignature( const char* bin_code );
 
+int BinPrint( char* bin_code, int size, ... );
+
 extern "C" int _printf( const char* str, ... ); 
 
 //-----------------------------------------------------------------------------
