@@ -113,6 +113,8 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
         #undef DEF_CMD
         #undef BT
     }
+
+    *(bin_code_x86_ptr++) = 0xC3; 
     
     return 1;
 }

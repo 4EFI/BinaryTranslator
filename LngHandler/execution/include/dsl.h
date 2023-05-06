@@ -40,11 +40,8 @@
 
 #define BIN_CODE_X86( i ) &bin_trtor->bin_code_x86[i]
 
-#define VAL_TO_BIN_CODE_X86                                                         \
-    for( int __i = 0; __i < sizeof( double ); __i++ )                               \
-    {                                                                               \
-        printf( "%lf\n", BIN_TRTOR_CMD( i ).val );                                  \
-        *(bin_code_x86_ptr++) = *(( u_char* )( &BIN_TRTOR_CMD( i ).val + __i ));    \
-    }       
+#define VAL_TO_BIN_CODE_X86                                                 \
+    memcpy( bin_code_x86_ptr, &BIN_TRTOR_CMD( i ).val, sizeof( double ) );  \
+    bin_code_x86_ptr += sizeof( double );
 
 //-----------------------------------------------------------------------------
