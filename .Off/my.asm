@@ -1,7 +1,5 @@
 
-push 120
-out
+push -120
 push 20
-
-add
+mul
 out

@@ -29,12 +29,12 @@ DEF_CMD( PUSH, 1,
     if( cmd->immed )
     {
         // mov r10, val
-        sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xbA ); PP( 2 );
-        
+        BIN_PRINT( 2, 0x49, 0xbA );
+
         VAL_TO_BIN_CODE_X86( &BIN_TRTOR_CMD( i ).val, sizeof( double ) );
 
         // push r10
-        sprintf( bin_code_x86_ptr, "%c%c", 0x41, 0x52 ); PP( 2 );
+        BIN_PRINT( 2, 0x41, 0x52 );
     }
 }
 #endif 
@@ -51,7 +51,13 @@ DEF_CMD( ADD, 2,
 }
 #else
 {
+    LOAD_XMM1_FROM_S(); PP_RSP( 8 );
+    LOAD_XMM0_FROM_S();
 
+    // addsd xmm0, xmm1
+    BIN_PRINT( 4, 0xf2, 0x0f, 0x58, 0xc1 );
+
+    LOAD_S_FROM_XMM0();
 }
 #endif 
 })
@@ -67,7 +73,13 @@ DEF_CMD( SUB, 3,
 }
 #else
 {
+    LOAD_XMM1_FROM_S(); PP_RSP( 8 );
+    LOAD_XMM0_FROM_S();
 
+    // subsd xmm0, xmm1
+    BIN_PRINT( 4, 0xf2, 0x0f, 0x5c, 0xc1 );
+
+    LOAD_S_FROM_XMM0();
 }
 #endif 
 })
@@ -83,7 +95,13 @@ DEF_CMD( MUL, 4,
 }
 #else
 {
+    LOAD_XMM1_FROM_S(); PP_RSP( 8 );
+    LOAD_XMM0_FROM_S();
 
+    // mulsd xmm0, xmm1
+    BIN_PRINT( 4, 0xf2, 0x0f, 0x59, 0xc1 );
+
+    LOAD_S_FROM_XMM0();
 }
 #endif 
 })
@@ -130,27 +148,26 @@ DEF_CMD( OUT, 6,
 {
     const char* str = "%d\n";
 
-    MOV_LPS_XMM_N( 0 );
-    PP_SP( 8 );
-    CVT_TSD_2_SI( 0 );
-    sprintf( bin_code_x86_ptr, "%c%c", 0x41, 0x52 ); PP( 2 );
+    LOAD_XMM0_FROM_S(); PP_RSP( 8 );
+    CVT_XMM0_TO_INT();
+    // push r10 
+    BIN_PRINT( 2, 0x41, 0x52 );
 
     // mov r10, str
-    sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xba ); PP( 2 );
+    BIN_PRINT( 2, 0x49, 0xba );
 
     PTR_TO_BIN_CODE_X86( str );
 
-    sprintf( bin_code_x86_ptr, "%c%c", 0x41, 0x52 ); PP( 2 );
+    // push r10 
+    BIN_PRINT( 2, 0x41, 0x52 );
 
     // mov r10, val
-    sprintf( bin_code_x86_ptr, "%c%c", 0x49, 0xba ); PP( 2 );
+    BIN_PRINT( 2, 0x49, 0xba );
     
     PTR_TO_BIN_CODE_X86( _printf );
 
     // call r10
-    sprintf( bin_code_x86_ptr, "%c%c%c", 0x41, 0xff, 0xd2 ); PP( 3 );
-
-    PP_SP( 16 );
+    BIN_PRINT( 3, 0x41, 0xff, 0xd2 ); PP_RSP( 16 );
 }
 #endif 
 })

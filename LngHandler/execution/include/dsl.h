@@ -64,16 +64,27 @@
 }
 
 
-#define PP_SP( NUM )                        \
+// add rsp, NUM
+#define PP_RSP( NUM )                       \
     BIN_PRINT( 4, 0x48, 0x83, 0xc4, NUM );        
 
-#define MM_SP( NUM )                        \
+// sub rsp, NUM
+#define MM_RSP( NUM )                       \
     BIN_PRINT( 4, 0x48, 0x83, 0xec, NUM );                         
 
-#define MOV_LPS_XMM_N( N )                                                      \
-    sprintf( bin_code_x86_ptr, "%c%c%c%c", 0x0f, 0x12, 0x04, 0x24 ); PP( 4 );
+// movlps xmm0, [rsp] 
+#define LOAD_XMM0_FROM_S()                  \
+    BIN_PRINT( 4, 0x0f, 0x12, 0x04, 0x24 );
 
-#define CVT_TSD_2_SI( XMM_N )                       \
+// movlps xmm1, [rsp] 
+#define LOAD_XMM1_FROM_S()                  \
+    BIN_PRINT( 4, 0x0f, 0x12, 0x0c, 0x24 );
+
+#define LOAD_S_FROM_XMM0()                  \
+    BIN_PRINT( 4, 0x0f, 0x13, 0x04, 0x24 );
+
+// cvttsd2si r10, xmm0
+#define CVT_XMM0_TO_INT()                           \
     BIN_PRINT( 5, 0xf2, 0x4c, 0x0f, 0x2c, 0xd0 );                         
 
 //-----------------------------------------------------------------------------

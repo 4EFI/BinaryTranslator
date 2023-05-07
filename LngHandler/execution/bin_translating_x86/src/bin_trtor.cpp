@@ -124,7 +124,7 @@ int BinTrtorRun( BinTrtor* bin_trtor )
     if( is_prot ) exit( errno );
 
     void ( *exec_function )( void ) = ( void ( * )( void ) )( bin_trtor->bin_code_x86 );
-    exec_function();
+    exec_function(); 
 
     return 1;
 }

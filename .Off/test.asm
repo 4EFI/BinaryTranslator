@@ -14,10 +14,22 @@ extern printf
 
 main:           mov r10, [val]
                 push r10
-                
+
                 movlps xmm0, [rsp]
                 cvttsd2si r10, xmm0
+                cvttsd2si r10, xmm1
+                cvttsd2si r10, xmm2
+                cvttsd2si r10, xmm3
+
+                movlps xmm0, [rsp]
+                movlps xmm1, [rsp]
+                movlps xmm2, [rsp]
+                movlps xmm3, [rsp]
                 
+                mulsd xmm0, xmm1
+
+                movlps [rsp], xmm0
+
                 push 100
                 push 20         
 
