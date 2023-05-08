@@ -11,7 +11,16 @@ DEF_CMD( HLT, 0,
 }
 #else
 {
+    NOP
+    
+    // mov eax, 0x3c
+    BIN_PRINT( 5, 0xb8, 0x3c, 0x00, 0x00, 0x00 );
+    // xor rdi, rdi
+    BIN_PRINT( 3, 0x48, 0x31, 0xff );
+    // syscall 
+    BIN_PRINT( 2, 0x0f, 0x05 );
 
+    NOP
 }
 #endif 
 })
@@ -26,16 +35,15 @@ DEF_CMD( PUSH, 1,
 }
 #else
 {   
+    NOP
+
     if( cmd->immed )
     {
-        // mov r10, val
-        BIN_PRINT( 2, 0x49, 0xbA );
-
-        VAL_TO_BIN_CODE_X86( &BIN_TRTOR_CMD( i ).val, sizeof( double ) );
-
-        // push r10
-        BIN_PRINT( 2, 0x41, 0x52 );
+        MOV_R10_VAL( &BIN_TRTOR_CMD( i ).val, sizeof( double ) );
+        PUSH_R10();
     }
+
+    NOP
 }
 #endif 
 })
@@ -51,6 +59,8 @@ DEF_CMD( ADD, 2,
 }
 #else
 {
+    NOP
+
     LOAD_XMM1_FROM_S(); PP_RSP( 8 );
     LOAD_XMM0_FROM_S();
 
@@ -58,6 +68,8 @@ DEF_CMD( ADD, 2,
     BIN_PRINT( 4, 0xf2, 0x0f, 0x58, 0xc1 );
 
     LOAD_S_FROM_XMM0();
+
+    NOP
 }
 #endif 
 })
@@ -73,6 +85,8 @@ DEF_CMD( SUB, 3,
 }
 #else
 {
+    NOP
+    
     LOAD_XMM1_FROM_S(); PP_RSP( 8 );
     LOAD_XMM0_FROM_S();
 
@@ -80,6 +94,8 @@ DEF_CMD( SUB, 3,
     BIN_PRINT( 4, 0xf2, 0x0f, 0x5c, 0xc1 );
 
     LOAD_S_FROM_XMM0();
+
+    NOP
 }
 #endif 
 })
@@ -95,6 +111,8 @@ DEF_CMD( MUL, 4,
 }
 #else
 {
+    NOP
+    
     LOAD_XMM1_FROM_S(); PP_RSP( 8 );
     LOAD_XMM0_FROM_S();
 
@@ -102,6 +120,8 @@ DEF_CMD( MUL, 4,
     BIN_PRINT( 4, 0xf2, 0x0f, 0x59, 0xc1 );
 
     LOAD_S_FROM_XMM0();
+
+    NOP
 }
 #endif 
 })
@@ -117,7 +137,17 @@ DEF_CMD( DIV, 5,
 }
 #else
 {
+    NOP
+    
+    LOAD_XMM1_FROM_S(); PP_RSP( 8 );
+    LOAD_XMM0_FROM_S();
 
+    // divsd xmm0, xmm1
+    BIN_PRINT( 4, 0xf2, 0x0f, 0x5e, 0xc1 );
+
+    LOAD_S_FROM_XMM0();
+
+    NOP
 }
 #endif 
 })
@@ -146,28 +176,23 @@ DEF_CMD( OUT, 6,
 }
 #else
 {
+    NOP
+    
     const char* str = "%d\n";
 
     LOAD_XMM0_FROM_S(); PP_RSP( 8 );
-    CVT_XMM0_TO_INT();
-    // push r10 
-    BIN_PRINT( 2, 0x41, 0x52 );
+    CVT_XMM0_TO_INT();  
+    PUSH_R10();
 
-    // mov r10, str
-    BIN_PRINT( 2, 0x49, 0xba );
+    MOV_R10_PTR( str );
+    PUSH_R10();
 
-    PTR_TO_BIN_CODE_X86( str );
-
-    // push r10 
-    BIN_PRINT( 2, 0x41, 0x52 );
-
-    // mov r10, val
-    BIN_PRINT( 2, 0x49, 0xba );
-    
-    PTR_TO_BIN_CODE_X86( _printf );
+    MOV_R10_PTR( _printf );
 
     // call r10
     BIN_PRINT( 3, 0x41, 0xff, 0xd2 ); PP_RSP( 16 );
+
+    NOP
 }
 #endif 
 })
@@ -199,7 +224,20 @@ DEF_CMD( JMP, 8,
 }
 #else
 {
+    NOP
+    
+    double val = 0;
+    MOV_R10_VAL( &val, sizeof( double ) );
+    
+    size_t cmd_num = FindLabelCommand( bin_trtor, BIN_TRTOR_CMD( i ).val );
 
+    // printf( "%u\n", cmd_num );
+
+    bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = ( bin_code_x86_ptr - sizeof( double ) );
+
+    BIN_PRINT( 3, 0x41, 0xff, 0xe2 );
+
+    NOP
 }
 #endif 
 })
@@ -274,7 +312,7 @@ DEF_CMD( CALL, 17,
 }
 #else
 {
-
+    // BIN_PRINT(  );
 }
 #endif 
 })
@@ -289,7 +327,8 @@ DEF_CMD( RET, 18,
 }
 #else
 {
-
+    // ret
+    BIN_PRINT( 1, 0xC3 );
 }
 #endif 
 })
@@ -337,8 +376,8 @@ DEF_CMD( POW, 21,
 }
 #else
 {
-
-}
+        
+}   
 #endif 
 })
 
@@ -430,21 +469,6 @@ DEF_CMD( IS_NE, 27,
 {
     S_POP_VALUES          
     S_PUSH( val_1 != val_2 );
-}
-#else
-{
-
-}
-#endif 
-})
-
-//-----------------------------------------------------------------------------
-
-DEF_CMD( PUSHI, 28, 
-{
-#ifndef BT
-{
-    S_PUSH( int( arg_val ) );
 }
 #else
 {

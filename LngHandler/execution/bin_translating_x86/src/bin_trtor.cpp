@@ -55,6 +55,8 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
     {        
         size_t str_len =  curr_str_ptr - bin_trtor->bin_code; 
         if(    str_len == bin_trtor->bin_code_size    ) break;
+
+        bin_trtor->commands[i].bin_code_pos = curr_str_ptr - bin_trtor->bin_code + SignatureBlockSize;
         
         // get cmd 
         memcpy( &bin_trtor->commands[i].cmd, curr_str_ptr++, sizeof( char ) );
@@ -84,12 +86,48 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
     return 1;
 }
 
+//-----------------------------------------------------------------------------
+
+size_t FindLabelCommand( BinTrtor* bin_trtor, int label_pos )
+{
+    for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
+    {   
+        if( bin_trtor->commands[i].bin_code_pos == label_pos )
+        {
+            return i;
+        }
+    }
+
+    return -1;
+}
+
+int FillJumpsVal( BinTrtor* bin_trtor )
+{
+    for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
+    {
+        char* jmp_val_ptr  = bin_trtor->commands[i].jmp_x86_val_ptr;
+
+        //printf(  );
+
+        if(   jmp_val_ptr != NULL   )
+        {
+            u_int64_t jmp_val = ( u_int64_t )( bin_trtor->commands[i].bin_code_x86_ptr );
+
+            memcpy( jmp_val_ptr, &jmp_val, sizeof( double ) );
+        }
+    }
+    
+    return 0;
+}
+
 int BinTrtorToX86( BinTrtor* bin_trtor )
 {
     char* bin_code_x86_ptr = bin_trtor->bin_code_x86;
-
+    
     for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
     {
+        bin_trtor->commands[i].bin_code_x86_ptr = bin_code_x86_ptr; 
+        
         CMD* cmd = &bin_trtor->commands[i].cmd;   
 
         #define BT
@@ -111,6 +149,8 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
         #undef BT
     }
 
+    FillJumpsVal( bin_trtor );
+
     *(bin_code_x86_ptr++) = 0xC3; // add 'ret' to end of buffer
     
     return 1;
@@ -124,7 +164,7 @@ int BinTrtorRun( BinTrtor* bin_trtor )
     if( is_prot ) exit( errno );
 
     void ( *exec_function )( void ) = ( void ( * )( void ) )( bin_trtor->bin_code_x86 );
-    exec_function(); 
+    exec_function();
 
     return 1;
 }

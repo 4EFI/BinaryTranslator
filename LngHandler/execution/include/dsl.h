@@ -36,23 +36,18 @@
 //  BinTrtor DSL
 //-----------------------------------------------------------------------------
 
-#define PP( NUM )               \
-    bin_code_x86_ptr += ( NUM );
-
-/*
-#define BIN_PRINTF( SIZE, ... )                            \
-{                                                               \
-    for(  )
-    char* __str = ( char* )calloc( 2 * ( SIZE ), 1 );           \
-    sprintf( bin_code_x86_ptr, STR, __VA_ARGS__ ); PP( SIZE );
-}
-*/
+#define PP( NUM ) bin_code_x86_ptr += ( NUM );
 
 #define BIN_PRINT( SIZE, ... )                                      \
-    BinPrint( bin_code_x86_ptr, SIZE, __VA_ARGS__ ); PP( SIZE );    \
+    BinPrint( bin_code_x86_ptr, SIZE, __VA_ARGS__ ); PP( SIZE );
 
 #define BIN_TRTOR_CMD( i ) bin_trtor->commands[ i ]
 
+#ifndef NDEBUG 
+    #define NOP BIN_PRINT( 1, 0x90 );
+#else
+    #define NOP ;
+#endif
 
 #define VAL_TO_BIN_CODE_X86( VAL_PTR, SIZE )                \
     memcpy( bin_code_x86_ptr, VAL_PTR, SIZE ); PP( SIZE );
@@ -65,12 +60,10 @@
 
 
 // add rsp, NUM
-#define PP_RSP( NUM )                       \
-    BIN_PRINT( 4, 0x48, 0x83, 0xc4, NUM );        
+#define PP_RSP( NUM ) BIN_PRINT( 4, 0x48, 0x83, 0xc4, NUM );        
 
 // sub rsp, NUM
-#define MM_RSP( NUM )                       \
-    BIN_PRINT( 4, 0x48, 0x83, 0xec, NUM );                         
+#define MM_RSP( NUM ) BIN_PRINT( 4, 0x48, 0x83, 0xec, NUM );                         
 
 // movlps xmm0, [rsp] 
 #define LOAD_XMM0_FROM_S()                  \
@@ -86,5 +79,18 @@
 // cvttsd2si r10, xmm0
 #define CVT_XMM0_TO_INT()                           \
     BIN_PRINT( 5, 0xf2, 0x4c, 0x0f, 0x2c, 0xd0 );                         
+
+// push r10
+#define PUSH_R10() BIN_PRINT( 2, 0x41, 0x52 );
+
+// mov r10, PTR
+#define MOV_R10_PTR( PTR )      \
+    BIN_PRINT( 2, 0x49, 0xba ); \
+    PTR_TO_BIN_CODE_X86( PTR );
+
+// mov r10, VAL
+#define MOV_R10_VAL( VAL_PTR, SIZEOF )      \
+    BIN_PRINT( 2, 0x49, 0xba );             \
+    VAL_TO_BIN_CODE_X86( VAL_PTR, SIZEOF );
 
 //-----------------------------------------------------------------------------

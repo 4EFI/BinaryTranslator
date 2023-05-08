@@ -12,7 +12,11 @@ section .text
 
 extern printf
 
-main:           mov r10, [val]
+main:           nop
+
+                jmp r10
+
+                mov r10, [val]
                 push r10
 
                 movlps xmm0, [rsp]
@@ -26,7 +30,7 @@ main:           mov r10, [val]
                 movlps xmm2, [rsp]
                 movlps xmm3, [rsp]
                 
-                mulsd xmm0, xmm1
+                divsd xmm0, xmm1
 
                 movlps [rsp], xmm0
 
