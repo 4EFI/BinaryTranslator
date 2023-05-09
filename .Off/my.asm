@@ -4,6 +4,10 @@ push 20
 mul
 out
 
-jmp :metka
+push 100.1
+push 100
+je :metka
 
 metka:
+
+hlt

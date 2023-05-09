@@ -93,4 +93,8 @@
     BIN_PRINT( 2, 0x49, 0xba );             \
     VAL_TO_BIN_CODE_X86( VAL_PTR, SIZEOF );
 
+// cmpsd xmm0, xmm1, TYPE
+#define CMPSD_XMM0_XMM1( TYPE )                     \
+    BIN_PRINT( 5, 0xf2, 0x0f, 0xc2, 0xc1, TYPE );
+
 //-----------------------------------------------------------------------------

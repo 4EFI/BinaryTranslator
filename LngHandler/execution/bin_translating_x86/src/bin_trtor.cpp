@@ -56,7 +56,7 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
         size_t str_len =  curr_str_ptr - bin_trtor->bin_code; 
         if(    str_len == bin_trtor->bin_code_size    ) break;
 
-        bin_trtor->commands[i].bin_code_pos = curr_str_ptr - bin_trtor->bin_code + SignatureBlockSize;
+        bin_trtor->commands[i].bin_code_pos = curr_str_ptr - bin_trtor->bin_code;
         
         // get cmd 
         memcpy( &bin_trtor->commands[i].cmd, curr_str_ptr++, sizeof( char ) );
@@ -106,14 +106,11 @@ int FillJumpsVal( BinTrtor* bin_trtor )
     for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
     {
         char* jmp_val_ptr  = bin_trtor->commands[i].jmp_x86_val_ptr;
-
-        //printf(  );
-
         if(   jmp_val_ptr != NULL   )
         {
-            u_int64_t jmp_val = ( u_int64_t )( bin_trtor->commands[i].bin_code_x86_ptr );
+            u_int32_t jmp_val = ( u_int32_t )( bin_trtor->commands[i].bin_code_x86_ptr - jmp_val_ptr - sizeof( u_int32_t ) );
 
-            memcpy( jmp_val_ptr, &jmp_val, sizeof( double ) );
+            memcpy( jmp_val_ptr, &jmp_val, sizeof( u_int32_t ) );
         }
     }
     

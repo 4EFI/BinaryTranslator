@@ -4,7 +4,8 @@ global main
 section .data
 
 string db      "%lf", 10
-val    dq       101.0
+val1    dq       101.0
+val2    dq       101.0
 
 section .text
 
@@ -14,12 +15,32 @@ extern printf
 
 main:           nop
 
-                jmp r10
+                op:
 
-                mov r10, [val]
+                movlps xmm1, [rsp] 
+                add    rsp, 8
+                movlps xmm0, [rsp]
+                add    rsp, 8
+                movq   r10,  xmm0
+
+                cmpsd xmm0, xmm1, 0
+                cmpsd xmm0, xmm1, 1
+                cmpsd xmm0, xmm1, 2
+
+                
+                cmp r10, 0x00
+                jne 0x01
+
+                je 0x10
+                jne 0x123498982134 
+                jbe 0x123498982134
+                jb  0x123498982134
+
+                ; cmp xmm0, 0
+
+                mov r10, [val1]
                 push r10
 
-                movlps xmm0, [rsp]
                 cvttsd2si r10, xmm0
                 cvttsd2si r10, xmm1
                 cvttsd2si r10, xmm2
