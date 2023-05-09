@@ -56,7 +56,7 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
         size_t str_len =  curr_str_ptr - bin_trtor->bin_code; 
         if(    str_len == bin_trtor->bin_code_size    ) break;
 
-        bin_trtor->commands[i].bin_code_pos = curr_str_ptr - bin_trtor->bin_code;
+        bin_trtor->commands[i].bin_code_pos = int( curr_str_ptr - bin_trtor->bin_code );
         
         // get cmd 
         memcpy( &bin_trtor->commands[i].cmd, curr_str_ptr++, sizeof( char ) );
@@ -117,7 +117,7 @@ int FillJumpsVal( BinTrtor* bin_trtor )
     return 0;
 }
 
-int BinTrtorToX86( BinTrtor* bin_trtor ) 
+int BinTrtorToX86( BinTrtor* bin_trtor )
 {
     char* bin_code_x86_ptr = bin_trtor->bin_code_x86;
     
@@ -148,7 +148,7 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
 
     FillJumpsVal( bin_trtor );
 
-    *(bin_code_x86_ptr++) = 0xC3; // add 'ret' to end of buffer
+    *(bin_code_x86_ptr++) = char( 0xC3 ); // add 'ret' to end of buffer
     
     return 1;
 }

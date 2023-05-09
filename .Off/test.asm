@@ -17,6 +17,8 @@ main:           nop
 
                 op:
 
+                call 0x01
+
                 jmp 0x01
 
                 movlps xmm1, [rsp] 

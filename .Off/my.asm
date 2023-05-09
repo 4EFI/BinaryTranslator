@@ -1,4 +1,9 @@
 
+call :main
+ret
+
+main:
+
 jmp :a
 
 push -120
@@ -14,4 +19,4 @@ jae :metka
 
 metka:
 
-hlt
+ret

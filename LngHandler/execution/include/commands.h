@@ -226,7 +226,7 @@ DEF_CMD( JMP, 8,
 {
     NOP
 
-    size_t cmd_num = FindLabelCommand( bin_trtor, BIN_TRTOR_CMD( i ).val ); 
+    size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) ); 
 
     // jmp ... 
     BIN_PRINT( 1, 0xe9 );
@@ -243,39 +243,39 @@ DEF_CMD( JMP, 8,
 
 #ifndef BT
 
-#define DEF_JMP( NAME, NUM, COND, UNUSED )          \
-    DEF_CMD( NAME, NUM,                             \
-    {                                               \
-        S_POP_VALUES                                \
-        if( val_1 COND val_2 ) ip = int(arg_val);   \
+#define DEF_JMP( NAME, NUM, UNUSED_0, UNUSED_1, COND, UNUSED_2 )    \
+    DEF_CMD( NAME, NUM,                                             \
+    {                                                               \
+        S_POP_VALUES                                                \
+        if( val_1 COND val_2 ) ip = int(arg_val);                   \
     })
 
 #else
 
-#define DEF_JMP( NAME, NUM, COND, CMP_TYPE )                                    \
-    DEF_CMD( NAME, NUM,                                                         \
-    {                                                                           \
-        NOP                                                                     \
-                                                                                \
-        LOAD_XMM1_FROM_S(); PP_RSP( 8 );                                        \
-        LOAD_XMM0_FROM_S(); PP_RSP( 8 );                                        \
-                                                                                \
-        CMPSD_XMM0_XMM1( CMP_TYPE );                                            \
-                                                                                \
-        /* movq r10, xmm0 */                                                    \
-        BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x7e, 0xc2 );                           \
-                                                                                \
-        size_t cmd_num = FindLabelCommand( bin_trtor, BIN_TRTOR_CMD( i ).val ); \
-                                                                                \
-        /* cmp r10, 0 */                                                        \
-        BIN_PRINT( 4, 0x49, 0x83, 0xfa, 0x00 );                                 \
-        /* jne ... */                                                           \
-        BIN_PRINT( 2, 0x0f, 0x85 /* ... */ );                                   \
-                                                                                \
-        bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = ( bin_code_x86_ptr );  \
-        PP( 4 );                                                                \
-                                                                                \
-        NOP                                                                     \
+#define DEF_JMP( NAME, NUM, UNUSED_0, UNUSED_1, COND, CMP_TYPE )                        \
+    DEF_CMD( NAME, NUM,                                                                 \
+    {                                                                                   \
+        NOP                                                                             \
+                                                                                        \
+        LOAD_XMM1_FROM_S(); PP_RSP( 8 );                                                \
+        LOAD_XMM0_FROM_S(); PP_RSP( 8 );                                                \
+                                                                                        \
+        CMPSD_XMM0_XMM1( CMP_TYPE );                                                    \
+                                                                                        \
+        /* movq r10, xmm0 */                                                            \
+        BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x7e, 0xc2 );                                   \
+                                                                                        \
+        size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) );  \
+                                                                                        \
+        /* cmp r10, 0 */                                                                \
+        BIN_PRINT( 4, 0x49, 0x83, 0xfa, 0x00 );                                         \
+        /* jne ... */                                                                   \
+        BIN_PRINT( 2, 0x0f, 0x85 /* ... */ );                                           \
+                                                                                        \
+        bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = ( bin_code_x86_ptr );          \
+        PP( 4 );                                                                        \
+                                                                                        \
+        NOP                                                                             \
     })                                  
 
 #endif
@@ -329,7 +329,17 @@ DEF_CMD( CALL, 17,
 }
 #else
 {
-    // BIN_PRINT(  );
+    NOP
+
+    size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) ); 
+
+    // call ... 
+    BIN_PRINT( 1, 0xe8 );
+    
+    bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = bin_code_x86_ptr; 
+    PP( 4 );
+
+    NOP
 }
 #endif 
 })
@@ -404,99 +414,38 @@ DEF_CMD( POW, 21,
 
 //-----------------------------------------------------------------------------
 
-DEF_CMD( IS_EE, 22, 
-{
+// CMP: is_ee, is_ne, ...
 #ifndef BT
-{
-    S_POP_VALUES          
-    S_PUSH( val_1 == val_2 );
-}
+
+#define DEF_JMP( UNUSED_0, UNUSED_1, NAME, NUM, COND, UNUSED_2 )    \
+    DEF_CMD( NAME, NUM,                                             \
+    {                                                               \
+        S_POP_VALUES                                                \
+        S_PUSH( val_1 COND val_2 );                                 \
+    })
+
 #else
-{
+    
+#define DEF_JMP( UNUSED_0, UNUSED_1, NAME, NUM, COND, CMP_TYPE )    \
+        DEF_CMD( NAME, NUM,                                         \
+        {                                                           \
+            NOP                                                     \
+                                                                    \
+            LOAD_XMM1_FROM_S(); PP_RSP( 8 );                        \
+            LOAD_XMM0_FROM_S();                                     \
+                                                                    \
+            CMPSD_XMM0_XMM1( CMP_TYPE );                            \
+                                                                    \
+            LOAD_S_FROM_XMM0();                                     \
+                                                                    \
+            NOP                                                     \
+        })  
 
-}
-#endif 
-})
+#endif
 
-//-----------------------------------------------------------------------------
+#include "jumps.h"
 
-DEF_CMD( IS_GE, 23, 
-{
-#ifndef BT
-{
-    S_POP_VALUES          
-    S_PUSH( val_1 >= val_2 );
-}
-#else
-{
-
-}
-#endif 
-})
-
-//-----------------------------------------------------------------------------
-
-DEF_CMD( IS_BE, 24, 
-{
-#ifndef BT
-{
-    S_POP_VALUES          
-    S_PUSH( val_1 <= val_2 );
-}
-#else
-{
-
-}
-#endif 
-})
-
-//-----------------------------------------------------------------------------
-
-DEF_CMD( IS_GT, 25, 
-{
-#ifndef BT
-{ 
-    S_POP_VALUES          
-    S_PUSH( val_1 > val_2 );
-}
-#else
-{
-
-}
-#endif 
-})
-
-//-----------------------------------------------------------------------------
-
-DEF_CMD( IS_BT, 26, 
-{
-#ifndef BT
-{
-    S_POP_VALUES          
-    S_PUSH( val_1 < val_2 );
-}
-#else
-{
-
-}
-#endif 
-})
-
-//-----------------------------------------------------------------------------
-
-DEF_CMD( IS_NE, 27, 
-{
-#ifndef BT
-{
-    S_POP_VALUES          
-    S_PUSH( val_1 != val_2 );
-}
-#else
-{
-
-}
-#endif 
-})
+#undef DEF_JMP
 
 //-----------------------------------------------------------------------------
 
