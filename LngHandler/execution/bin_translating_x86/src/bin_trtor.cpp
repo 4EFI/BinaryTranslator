@@ -35,7 +35,7 @@ int BinTrtorCtor( BinTrtor* bin_trtor, const char* bin_code )
 //-----------------------------------------------------------------------------
 
 int BinTrtorDtor( BinTrtor* bin_trtor )
-{
+{ 
     bin_trtor->bin_code = NULL;
 
     FREE( bin_trtor->bin_code_x86 );
@@ -62,7 +62,7 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
         bin_trtor->commands[i].bin_code_pos = int( curr_str_ptr - bin_trtor->bin_code );
         
         // get cmd 
-        memcpy( &bin_trtor->commands[i].cmd, curr_str_ptr++, sizeof( char ) );
+        memcpy( &bin_trtor->commands[i].cmd, curr_str_ptr++, sizeof( char ) ); 
 
         CMD* cmd = &bin_trtor->commands[i].cmd;
 
@@ -71,7 +71,7 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
             double   val = 0;
             memcpy( &val, curr_str_ptr, sizeof( double ) );
 
-            bin_trtor->commands[i].val = val;
+            bin_trtor->commands[i].val = val; 
             curr_str_ptr += sizeof( double );
         }
 
@@ -124,6 +124,14 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
 {
     char* bin_code_x86_ptr = bin_trtor->bin_code_x86;
     
+    struct Label
+    {
+        char*      jmp_val_ptr;
+        u_int64_t* jmp_val; 
+    };
+
+    Label* labels = ( Label* )calloc( NumLabels, sizeof( Label ) );
+
     for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
     {
         bin_trtor->commands[i].bin_code_x86_ptr = bin_code_x86_ptr; 
@@ -136,7 +144,7 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
                 __VA_ARGS__               \
                 break;
 
-        switch( cmd->code )
+        switch( cmd->code ) 
         {
             #include "commands.h"
             default:

@@ -20,11 +20,10 @@ static int NumDumpDividers = 65;
 
 enum Reg_i
 {
-    R0X = 0,
-    RAX = 1,
-    RBX = 2,
-    RCX = 3, 
-    RDX = 4
+    RAX = 0,
+    RCX = 1, 
+    RDX = 2,
+    RBX = 3
 };
 
 struct CMD

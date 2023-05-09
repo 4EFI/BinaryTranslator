@@ -27,6 +27,44 @@ DEF_CMD( HLT, 0,
 
 //-----------------------------------------------------------------------------
 
+#define REG_PLUS_VALUE_TO_XMM0()                            \
+{                                                           \
+    if( cmd->reg )                                          \
+    {                                                       \
+        /* movq xmm1, r10 */                                \
+        BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x6e, 0xca );       \
+                                                            \
+        LOAD_XMM0_FROM_RX( BIN_TRTOR_CMD( i ).reg_num );    \
+                                                            \
+        /* addsd xmm0, xmm1 */                              \
+        BIN_PRINT( 4, 0xf2, 0x0f, 0x58, 0xc1 );             \
+    }                                                       \
+    else if( cmd->memory )                                  \
+    {                                                       \
+        /* movq xmm0, r10 */                                \
+        BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x6e, 0xc2 );       \
+    }                                                       \
+}
+
+#define PUSH()                                              \
+{                                                           \
+    if( cmd->memory )                                       \
+    {                                                       \
+        CVT_XMM0_TO_INT();                                  \
+        PUSH_R10_M();                                       \
+    }                                                       \
+    else                                                    \
+    {                                                       \
+        if( cmd->reg && cmd->immed )                        \
+        {                                                   \
+            /* movq r10, xmm0 */                            \
+            BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x7e, 0xc2 );   \
+        }                                                   \
+                                                            \
+        PUSH_R10();                                         \
+    }                                                       \
+}
+
 DEF_CMD( PUSH, 1, 
 {
 #ifndef BT
@@ -37,14 +75,21 @@ DEF_CMD( PUSH, 1,
 {   
     NOP 
 
-    if( cmd->immed )
+    if( cmd->immed || cmd->memory )
     {
-        MOV_R10_VAL( &BIN_TRTOR_CMD( i ).val, sizeof( double ) );
-        PUSH_R10();
+        double val = 0;
+        if( cmd->immed  ) val += BIN_TRTOR_CMD( i ).val;
+        if( cmd->memory ) val += double( ( u_int64_t )( bin_trtor->RAM ) );
+        
+        MOV_R10_VAL( &val, sizeof( double ) );
+    
+        REG_PLUS_VALUE_TO_XMM0();
+        
+        PUSH();
     }
     else
-    {
-
+    {        
+        PUSH_RX( BIN_TRTOR_CMD( i ).reg_num );
     }
 
     NOP
@@ -185,8 +230,7 @@ DEF_CMD( OUT, 6,
     const char* str = "%d\n";
 
     LOAD_XMM0_FROM_S(); PP_RSP( 8 );
-    // cvttsd2si r10, xmm0
-    BIN_PRINT( 5, 0xf2, 0x4c, 0x0f, 0x2c, 0xd0 );
+    CVT_XMM0_TO_INT();
     PUSH_R10();
 
     MOV_R10_PTR( str );
@@ -213,7 +257,25 @@ DEF_CMD( POP, 7,
 }
 #else
 {
+    NOP 
 
+    if( cmd->immed )
+    {
+        double val = BIN_TRTOR_CMD( i ).val + double( ( u_int64_t )( bin_trtor->RAM ) );
+        
+        MOV_R10_VAL( &val, sizeof( double ) );
+    
+        REG_PLUS_VALUE_TO_XMM0();
+        
+        // pop qword r10
+        BIN_PRINT( 3, 0x41, 0x8f, 0x02 );
+    }
+    else
+    {        
+        POP_RX( BIN_TRTOR_CMD( i ).reg_num );
+    }
+
+    NOP
 }
 #endif 
 })
@@ -336,7 +398,9 @@ DEF_CMD( CALL, 17,
 {
     NOP
 
-    size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) ); 
+    size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) );
+
+    printf( "%d\n", cmd_num ); 
 
     // call ... 
     BIN_PRINT( 1, 0xe8 );

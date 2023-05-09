@@ -1,22 +1,38 @@
 
-call :main
-ret
+Start:
+	push 5  
+	call :Factorial
+	out
 
-main:
+	hlt
 
-jmp :a
+Factorial:
+	pop rax
 
-push -120
-push 20
-mul
-out
+	push 1
+	pop rbx
 
-a:
+	call :DoFactorial
+	push rbx
 
-push 100
-push 100
-jae :metka
+	ret
 
-metka:
+DoFactorial:  	
+	push 0
+	push rax
+	je :endDoFactorial
 
-ret
+	push rbx
+    push rax
+	mul
+	pop rbx
+
+	push rax + -1 ; Hehe
+	pop rax
+
+	call :DoFactorial	
+
+	endDoFactorial:
+	ret
+
+         
