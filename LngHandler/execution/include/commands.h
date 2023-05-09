@@ -259,20 +259,23 @@ DEF_CMD( POP, 7,
 {
     NOP 
 
-    if( cmd->immed )
+    if( cmd->immed || cmd->memory )
     {
-        double val = BIN_TRTOR_CMD( i ).val + double( ( u_int64_t )( bin_trtor->RAM ) );
+        double           val  = double( ( u_int64_t )( bin_trtor->RAM ) );
+        if( cmd->immed ) val += BIN_TRTOR_CMD( i ).val;
         
         MOV_R10_VAL( &val, sizeof( double ) );
     
         REG_PLUS_VALUE_TO_XMM0();
         
-        // pop qword r10
+        CVT_XMM0_TO_INT();
+
+        // pop qword [r10]
         BIN_PRINT( 3, 0x41, 0x8f, 0x02 );
     }
     else
     {        
-        POP_RX( BIN_TRTOR_CMD( i ).reg_num );
+        POP_RX( BIN_TRTOR_CMD( i ).reg_num );  
     }
 
     NOP
@@ -378,7 +381,16 @@ DEF_CMD( SQRT, 16,
 }
 #else
 {
+    NOP
+    
+    LOAD_XMM1_FROM_S();
 
+    // sqrtsd xmm0, xmm1
+    BIN_PRINT( 4, 0xf2, 0x0f, 0x51, 0xc1 );
+
+    LOAD_S_FROM_XMM0();
+
+    NOP
 }
 #endif 
 })
@@ -398,8 +410,12 @@ DEF_CMD( CALL, 17,
 
     size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) );
 
-    // call ... 
-    BIN_PRINT( 1, 0xe8 );
+    // mov rbp, ret_ptr
+    BIN_PRINT( 2, 0x48, 0xbd );
+    PTR_TO_BIN_CODE_X86( bin_code_x86_ptr + 8 /*sizeof ptr*/ + 5 /*jmp code size*/ );
+
+    // jmp ... 
+    BIN_PRINT( 1, 0xe9 );
     
     ADD_JMP(); PP( 4 );
 
@@ -420,6 +436,8 @@ DEF_CMD( RET, 18,
 {
     NOP
     
+    // push rbp ; push ret_addr
+    BIN_PRINT( 1, 0x55 );
     // ret
     BIN_PRINT( 1, 0xC3 );
 

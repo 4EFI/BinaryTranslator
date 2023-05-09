@@ -38,8 +38,6 @@ struct CMD
 // #define NHASH
 // #define NCANARY
 
-typedef double Elem_t;
-
 static const char Signature[] = "SP"; // Super paper
 static const char Version     = 1;
 

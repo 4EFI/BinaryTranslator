@@ -255,7 +255,7 @@ int FuncToAsm( Node* node, FILE* file )
     if( NODE_TYPE != FUNC_TYPE ) return 0;
 
     fprintf( file, "%s:\n", L_VAR );
-    AddLocalVarsBlock( file, true ); // {
+    AddLocalVarsBlock( file, true ); // {z
 
     FuncParamsToAsm( node->left->left, file );
 
