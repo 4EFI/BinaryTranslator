@@ -14,8 +14,6 @@ struct Command
 
     int   bin_code_pos;
     char* bin_code_x86_ptr;
-
-    char* jmp_x86_val_ptr;
 };
 
 struct BinTrtor

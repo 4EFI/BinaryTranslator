@@ -104,17 +104,19 @@ size_t FindLabelCommand( BinTrtor* bin_trtor, int label_pos )
     return -1;
 }
 
-int FillJumpsVal( BinTrtor* bin_trtor )
+struct Jmp
 {
-    for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
-    {
-        char* jmp_val_ptr  = bin_trtor->commands[i].jmp_x86_val_ptr;
-        if(   jmp_val_ptr != NULL   )
-        {
-            u_int32_t jmp_val = ( u_int32_t )( bin_trtor->commands[i].bin_code_x86_ptr - jmp_val_ptr - sizeof( u_int32_t ) );
+    char*      jmp_val_ptr;
+    u_int32_t* jmp_val; 
+};
 
-            memcpy( jmp_val_ptr, &jmp_val, sizeof( u_int32_t ) );
-        }
+int FillJumpsVal( Jmp* jmps_arr, int num )
+{
+    for( size_t i = 0; i < num; i++ )
+    {
+        u_int32_t jmp_val = ( u_int32_t )( *jmps_arr[i].jmp_val - u_int64_t( jmps_arr[i].jmp_val_ptr ) - sizeof( u_int32_t ) );
+
+        memcpy( jmps_arr[i].jmp_val_ptr, &jmp_val, sizeof( u_int32_t ) );
     }
     
     return 0;
@@ -123,14 +125,9 @@ int FillJumpsVal( BinTrtor* bin_trtor )
 int BinTrtorToX86( BinTrtor* bin_trtor )
 {
     char* bin_code_x86_ptr = bin_trtor->bin_code_x86;
-    
-    struct Label
-    {
-        char*      jmp_val_ptr;
-        u_int64_t* jmp_val; 
-    };
 
-    Label* labels = ( Label* )calloc( NumLabels, sizeof( Label ) );
+    Jmp* jmps_arr = ( Jmp* )calloc( NumLabels, sizeof( Jmp ) );
+    int  curr_jmp = 0;
 
     for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
     {
@@ -157,7 +154,7 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
         #undef BT
     }
 
-    FillJumpsVal( bin_trtor );
+    FillJumpsVal( jmps_arr, curr_jmp );
 
     *(bin_code_x86_ptr++) = char( 0xC3 ); // add 'ret' to end of buffer
     

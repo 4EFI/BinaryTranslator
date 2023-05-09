@@ -114,4 +114,9 @@
 #define CMPSD_XMM0_XMM1( TYPE )                     \
     BIN_PRINT( 5, 0xf2, 0x0f, 0xc2, 0xc1, TYPE );
 
+#define ADD_JMP()                                                                                           \
+    jmps_arr[ curr_jmp ].jmp_val_ptr =  bin_code_x86_ptr;                                                   \
+    jmps_arr[ curr_jmp ].jmp_val     = ( u_int32_t* )( &bin_trtor->commands[ cmd_num ].bin_code_x86_ptr );  \
+    curr_jmp++; 
+
 //-----------------------------------------------------------------------------

@@ -298,8 +298,7 @@ DEF_CMD( JMP, 8,
     // jmp ... 
     BIN_PRINT( 1, 0xe9 );
     
-    bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = bin_code_x86_ptr; 
-    PP( 4 );
+    ADD_JMP(); PP( 4 );
 
     NOP
 }
@@ -339,8 +338,7 @@ DEF_CMD( JMP, 8,
         /* jne ... */                                                                   \
         BIN_PRINT( 2, 0x0f, 0x85 /* ... */ );                                           \
                                                                                         \
-        bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = ( bin_code_x86_ptr );          \
-        PP( 4 );                                                                        \
+        ADD_JMP(); PP( 4 );                                                             \
                                                                                         \
         NOP                                                                             \
     })                                  
@@ -400,13 +398,10 @@ DEF_CMD( CALL, 17,
 
     size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) );
 
-    printf( "%d\n", cmd_num ); 
-
     // call ... 
     BIN_PRINT( 1, 0xe8 );
     
-    bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = bin_code_x86_ptr; 
-    PP( 4 );
+    ADD_JMP(); PP( 4 );
 
     NOP
 }
