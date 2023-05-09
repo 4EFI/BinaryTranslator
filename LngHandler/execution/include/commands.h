@@ -245,7 +245,7 @@ DEF_CMD( JMP, 8,
 
 #ifndef BT
 
-#define DEF_JMP( NAME, NUM, COND )                  \
+#define DEF_JMP( NAME, NUM, COND, UNUSED )          \
     DEF_CMD( NAME, NUM,                             \
     {                                               \
         S_POP_VALUES                                \
@@ -254,7 +254,7 @@ DEF_CMD( JMP, 8,
 
 #else
 
-#define DEF_JMP( NAME, NUM, COND )                                              \
+#define DEF_JMP( NAME, NUM, COND, CMP_TYPE )                                    \
     DEF_CMD( NAME, NUM,                                                         \
     {                                                                           \
         NOP                                                                     \
@@ -262,7 +262,7 @@ DEF_CMD( JMP, 8,
         LOAD_XMM1_FROM_S(); PP_RSP( 8 );                                        \
         LOAD_XMM0_FROM_S(); PP_RSP( 8 );                                        \
                                                                                 \
-        CMPSD_XMM0_XMM1( 0 );                                                   \
+        CMPSD_XMM0_XMM1( CMP_TYPE );                                            \
                                                                                 \
         /* movq r10, xmm0 */                                                    \
         BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x7e, 0xc2 );                           \
