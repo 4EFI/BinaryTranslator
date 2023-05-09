@@ -226,15 +226,13 @@ DEF_CMD( JMP, 8,
 {
     NOP
 
-    double val = 0;
-    MOV_R10_VAL( &val, sizeof( double ) );
-    
     size_t cmd_num = FindLabelCommand( bin_trtor, BIN_TRTOR_CMD( i ).val ); 
 
-    bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = ( bin_code_x86_ptr - sizeof( double ) );
-
-    // jmp r10
-    BIN_PRINT( 3, 0x41, 0xff, 0xe2 );
+    // jmp ... 
+    BIN_PRINT( 1, 0xe9 );
+    
+    bin_trtor->commands[ cmd_num ].jmp_x86_val_ptr = bin_code_x86_ptr; 
+    PP( 4 );
 
     NOP
 }

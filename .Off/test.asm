@@ -17,6 +17,8 @@ main:           nop
 
                 op:
 
+                jmp 0x01
+
                 movlps xmm1, [rsp] 
                 add    rsp, 8
                 movlps xmm0, [rsp]

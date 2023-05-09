@@ -117,7 +117,7 @@ int FillJumpsVal( BinTrtor* bin_trtor )
     return 0;
 }
 
-int BinTrtorToX86( BinTrtor* bin_trtor )
+int BinTrtorToX86( BinTrtor* bin_trtor ) 
 {
     char* bin_code_x86_ptr = bin_trtor->bin_code_x86;
     

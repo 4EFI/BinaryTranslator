@@ -1,8 +1,12 @@
 
+jmp :a
+
 push -120
 push 20
 mul
 out
+
+a:
 
 push 100
 push 100
