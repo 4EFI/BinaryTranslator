@@ -74,11 +74,7 @@
     BIN_PRINT( 4, 0x0f, 0x12, 0x0c, 0x24 );
 
 #define LOAD_S_FROM_XMM0()                  \
-    BIN_PRINT( 4, 0x0f, 0x13, 0x04, 0x24 );
-
-// cvttsd2si r10, xmm0
-#define CVT_XMM0_TO_INT()                           \
-    BIN_PRINT( 5, 0xf2, 0x4c, 0x0f, 0x2c, 0xd0 );                         
+    BIN_PRINT( 4, 0x0f, 0x13, 0x04, 0x24 );                  
 
 // push r10
 #define PUSH_R10() BIN_PRINT( 2, 0x41, 0x52 );

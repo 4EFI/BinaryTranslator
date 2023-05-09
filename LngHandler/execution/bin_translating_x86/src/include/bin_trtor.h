@@ -29,6 +29,7 @@ struct BinTrtor
     size_t num_cmds;
 
     Command* commands;
+    double*  RAM;
 };
 
 //-----------------------------------------------------------------------------

@@ -17,89 +17,32 @@ main:           nop
 
                 op:
 
-                call 0x01
-
-                jmp 0x01
-
-                movlps xmm1, [rsp] 
-                add    rsp, 8
-                movlps xmm0, [rsp]
-                add    rsp, 8
-                movq   r10,  xmm0
-
-                cmpsd xmm0, xmm1, 0
-                cmpsd xmm0, xmm1, 1
-                cmpsd xmm0, xmm1, 2
-
-                
-                cmp r10, 0x00
-                jne 0x01
-
-                je 0x10
-                jne 0x123498982134 
-                jbe 0x123498982134
-                jb  0x123498982134
-
-                ; cmp xmm0, 0
-
-                mov r10, [val1]
-                push r10
-
-                cvttsd2si r10, xmm0
-                cvttsd2si r10, xmm1
-                cvttsd2si r10, xmm2
-                cvttsd2si r10, xmm3
-
-                movlps xmm0, [rsp]
-                movlps xmm1, [rsp]
-                movlps xmm2, [rsp]
-                movlps xmm3, [rsp]
-                
-                divsd xmm0, xmm1
-
-                movlps [rsp], xmm0
-
-                push 100
-                push 20         
-
-                movlps xmm1, [rsp]
-                add rsp, 8 
-                movlps xmm0, [rsp] 
-
+                movq xmm0, rax
+                mov  r10, 0x0a
+                movq xmm1, r10
                 addsd xmm0, xmm1
-                movlps [rsp], xmm0
+                movq r10, xmm0
 
-                mov rsi, 0xff00000000ff0000
-
-                
-                add rsp, 16
-                sub rsp, 16
-
-                call r10
-
-                mov  r8, 0xff00000000ff0000
-                push r8
-
-                push 0xff00000000ff0000
+                push qword [rax]
+                push qword [rcx]
+                push qword [rdx]
+                push qword [rbx]
 
                 push rax
                 push rcx
                 push rdx
                 push rbx
-                push rsi 
-                push rdi
-                push r8
-                push r9
-                push r10
-                push r11
-                push r12
 
-                add rax, 100
-                add rcx, rax
-    
-                mov rax, 0x3c
-                xor rdi, rdi
-                syscall
+                add r10, rax
+                add r10, rcx
+                add r10, rdx
+                add r10, rbx
+
+                push r10
+                push qword [r10]
+
+                movlps xmm1, [val1] 
+                sqrtsd xmm0, xmm1
 
 adb:    
     ret

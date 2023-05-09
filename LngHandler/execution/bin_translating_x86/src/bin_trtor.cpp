@@ -8,6 +8,10 @@
 
 #include "bin_trtor.h"
 
+#define FREE( PTR )     \
+    free( PTR );        \
+    PTR = NULL;
+
 //-----------------------------------------------------------------------------
 
 int BinTrtorCtor( BinTrtor* bin_trtor, const char* bin_code )
@@ -22,7 +26,8 @@ int BinTrtorCtor( BinTrtor* bin_trtor, const char* bin_code )
     bin_trtor->bin_code_x86_size = size * 10;
     bin_trtor->bin_code_x86 = ( char* )aligned_alloc( PageSize, bin_trtor->bin_code_x86_size );
 
-    bin_trtor->commands = ( Command* )calloc( size, sizeof( Command ) ); 
+    bin_trtor->commands = ( Command* )calloc( size,    sizeof( Command ) ); 
+    bin_trtor->RAM      = ( double*  )calloc( RamSize, sizeof( double  ) );
     
     return 1;
 }
@@ -33,11 +38,9 @@ int BinTrtorDtor( BinTrtor* bin_trtor )
 {
     bin_trtor->bin_code = NULL;
 
-    free( bin_trtor->bin_code_x86 );
-    bin_trtor->bin_code_x86 = NULL;
-
-    free( bin_trtor->commands );
-    bin_trtor->commands = NULL;
+    FREE( bin_trtor->bin_code_x86 );
+    FREE( bin_trtor->commands );
+    FREE( bin_trtor->RAM );
 
     bin_trtor->num_cmds      = 0;
     bin_trtor->bin_code_size = 0;

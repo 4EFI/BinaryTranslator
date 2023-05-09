@@ -35,12 +35,16 @@ DEF_CMD( PUSH, 1,
 }
 #else
 {   
-    NOP
+    NOP 
 
     if( cmd->immed )
     {
         MOV_R10_VAL( &BIN_TRTOR_CMD( i ).val, sizeof( double ) );
         PUSH_R10();
+    }
+    else
+    {
+
     }
 
     NOP
@@ -181,7 +185,8 @@ DEF_CMD( OUT, 6,
     const char* str = "%d\n";
 
     LOAD_XMM0_FROM_S(); PP_RSP( 8 );
-    CVT_XMM0_TO_INT();  
+    // cvttsd2si r10, xmm0
+    BIN_PRINT( 5, 0xf2, 0x4c, 0x0f, 0x2c, 0xd0 );
     PUSH_R10();
 
     MOV_R10_PTR( str );
