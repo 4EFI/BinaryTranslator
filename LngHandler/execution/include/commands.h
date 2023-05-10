@@ -500,7 +500,7 @@ DEF_CMD( POW, 21,
 
 //-----------------------------------------------------------------------------
 
-// CMP: is_ee, is_ne, ...
+// CMP: is_ee, is_ne, etc...
 #ifndef BT
 
 #define DEF_JMP( UNUSED_0, UNUSED_1, NAME, NUM, COND, UNUSED_2 )    \
@@ -513,19 +513,19 @@ DEF_CMD( POW, 21,
 #else
     
 #define DEF_JMP( UNUSED_0, UNUSED_1, NAME, NUM, COND, CMP_TYPE )    \
-        DEF_CMD( NAME, NUM,                                         \
-        {                                                           \
-            NOP                                                     \
+    DEF_CMD( NAME, NUM,                                             \
+    {                                                               \
+        NOP                                                         \
                                                                     \
-            LOAD_XMM1_FROM_S(); PP_RSP( 8 );                        \
-            LOAD_XMM0_FROM_S();                                     \
+        LOAD_XMM1_FROM_S(); PP_RSP( 8 );                            \
+        LOAD_XMM0_FROM_S();                                         \
                                                                     \
-            CMPSD_XMM0_XMM1( CMP_TYPE );                            \
+        CMPSD_XMM0_XMM1( CMP_TYPE );                                \
                                                                     \
-            LOAD_S_FROM_XMM0();                                     \
+        LOAD_S_FROM_XMM0();                                         \
                                                                     \
-            NOP                                                     \
-        })  
+        NOP                                                         \
+    })  
 
 #endif
 
