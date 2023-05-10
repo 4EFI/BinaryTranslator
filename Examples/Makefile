@@ -1,5 +1,8 @@
 
 PP = ./../LngHandler/bin/ppp
+
+EX = ./../LngHandler/bin/cpu
+AS = ./../LngHandler/bin/asm
 BT = ./../LngHandler/bin/bin_translator
 
 compile :
