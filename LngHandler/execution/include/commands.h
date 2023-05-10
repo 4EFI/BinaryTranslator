@@ -410,9 +410,13 @@ DEF_CMD( CALL, 17,
 
     size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) );
 
-    // mov rbp, ret_ptr
-    BIN_PRINT( 2, 0x48, 0xbd );
-    PTR_TO_BIN_CODE_X86( bin_code_x86_ptr + 8 /*sizeof ptr*/ + 5 /*jmp code size*/ );
+    PP_RBP( 8 );
+
+    // mov r10, ret_ptr
+    MOV_R10_PTR( bin_code_x86_ptr + 12 /*movs code size*/ + 5 /*jmp code size*/ );
+
+    // mov qword [rbp], r10
+    BIN_PRINT( 4, 0x4c, 0x89, 0x55, 0x00 ); 
 
     // jmp ... 
     BIN_PRINT( 1, 0xe9 );
@@ -436,8 +440,8 @@ DEF_CMD( RET, 18,
 {
     NOP
     
-    // push rbp ; push ret_addr
-    BIN_PRINT( 1, 0x55 );
+    // push qword [rbp] ; push ret_addr
+    BIN_PRINT( 3, 0xff, 0x75, 0x00 ); MM_RBP( 8 );
     // ret
     BIN_PRINT( 1, 0xC3 );
 

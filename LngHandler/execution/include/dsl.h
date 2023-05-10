@@ -65,6 +65,13 @@
 // sub rsp, NUM
 #define MM_RSP( NUM ) BIN_PRINT( 4, 0x48, 0x83, 0xec, NUM );                         
 
+// add rbp, NUM
+#define PP_RBP( NUM ) BIN_PRINT( 4, 0x48, 0x83, 0xc5, NUM );        
+
+// sub rbp, NUM
+#define MM_RBP( NUM ) BIN_PRINT( 4, 0x48, 0x83, 0xed, NUM );                         
+
+
 // movlps xmm0, [rsp] 
 #define LOAD_XMM0_FROM_S()                  \
     BIN_PRINT( 4, 0x0f, 0x12, 0x04, 0x24 );

@@ -1,7 +1,12 @@
 
+#ifndef BIN_TRTOR_H
+#define BIN_TRTOR_H
+
 #include "config.h"
 
 #include <stdio.h>
+
+const int StackSize = 1000;
 
 //-----------------------------------------------------------------------------
 
@@ -26,8 +31,9 @@ struct BinTrtor
 
     size_t num_cmds;
 
-    Command* commands;
-    double*  RAM;
+    Command*   commands;
+    double*    RAM;
+    u_int64_t* stack_ret;
 };
 
 //-----------------------------------------------------------------------------
@@ -50,3 +56,5 @@ int BinPrint( char* bin_code, int size, ... );
 extern "C" int _printf( const char* str, ... ); 
 
 //-----------------------------------------------------------------------------
+
+#endif

@@ -5,7 +5,7 @@
 #include <string.h>
 #include <stdint.h>
 
-typedef double Elem_t;
+typedef uint64_t Elem_t;
 
 //---------------------------------------------------------------------------
 

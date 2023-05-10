@@ -26,8 +26,9 @@ int BinTrtorCtor( BinTrtor* bin_trtor, const char* bin_code )
     bin_trtor->bin_code_x86_size = size * 10;
     bin_trtor->bin_code_x86 = ( char* )aligned_alloc( PageSize, bin_trtor->bin_code_x86_size );
 
-    bin_trtor->commands = ( Command* )calloc( size,    sizeof( Command ) ); 
-    bin_trtor->RAM      = ( double*  )calloc( RamSize, sizeof( double  ) );
+    bin_trtor->commands  = ( Command*   )calloc( size,      sizeof( Command   ) ); 
+    bin_trtor->RAM       = ( double*    )calloc( RamSize,   sizeof( double    ) );
+    bin_trtor->stack_ret = ( u_int64_t* )calloc( StackSize, sizeof( u_int64_t ) );
     
     return 1;
 }
@@ -41,6 +42,7 @@ int BinTrtorDtor( BinTrtor* bin_trtor )
     FREE( bin_trtor->bin_code_x86 );
     FREE( bin_trtor->commands );
     FREE( bin_trtor->RAM );
+    FREE( bin_trtor->stack_ret );
 
     bin_trtor->num_cmds      = 0;
     bin_trtor->bin_code_size = 0;
@@ -122,12 +124,30 @@ int FillJumpsVal( Jmp* jmps_arr, int num )
     return 0;
 }
 
+#define XOR( reg ) BIN_PRINT( 3, 0x48, 0x31, reg );
+
+#define NULL_REGS()             \
+{                               \
+    XOR( 0xc0 ); /* rax */      \
+    XOR( 0xc9 ); /* rcx */      \
+    XOR( 0xd2 ); /* rdx */      \
+    XOR( 0xdb ); /* rbx */      \
+}                               \
+
 int BinTrtorToX86( BinTrtor* bin_trtor )
 {
     char* bin_code_x86_ptr = bin_trtor->bin_code_x86; 
 
     Jmp* jmps_arr = ( Jmp* )calloc( NumLabels, sizeof( Jmp ) );
     int  curr_jmp = 0;
+
+    // mov r10, stack_ret_addr 
+    MOV_R10_PTR( bin_trtor->stack_ret );
+    
+    // mov rbp, r10
+    BIN_PRINT( 3, 0x4c, 0x89, 0xd5 ); 
+
+    NULL_REGS();
 
     for( size_t i = 0; i < bin_trtor->num_cmds; i++ )
     {

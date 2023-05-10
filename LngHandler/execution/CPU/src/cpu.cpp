@@ -70,8 +70,10 @@ Elem_t* CpuGetArg( CPU* cpu, int* ip, Elem_t* val )
 
     if( cmd.memory )
     {
-        arg_ptr = &cpu->RAM[int(*val)];
-        (*val)  =  cpu->RAM[int(*val)];
+        int ram_pos = int( (*val) / sizeof( Elem_t ) );
+        
+        arg_ptr = &cpu->RAM[ ram_pos ];
+        (*val)  =  cpu->RAM[ ram_pos ];
     }
 
     return arg_ptr;  

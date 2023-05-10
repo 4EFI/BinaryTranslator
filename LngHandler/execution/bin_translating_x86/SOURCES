@@ -1,8 +1,8 @@
 
 # makefile data 
 
-SRC =   src/main.cpp      \
-        src/bin_trtor.cpp
+SRC =   src/main.cpp        \
+        src/bin_trtor.cpp 
 
 # already compiled objects
 

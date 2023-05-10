@@ -1,18 +1,19 @@
 
 Start:
-	push 5
-    pop  rax  
+	push 5  
 	call :Factorial
-	push rbx
-    out
+	out
 
-	ret
+	hlt
 
 Factorial:
+	pop rax
+
 	push 1
 	pop rbx
 
 	call :DoFactorial
+	push rbx
 
 	ret
 

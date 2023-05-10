@@ -15,12 +15,33 @@ extern printf
 
 main:           nop
 
+                xor rax, rax
+                xor rcx, rcx
+                xor rdx, rdx
+                xor rbx, rbx
+
                 op:
 
-                pop rax
-                pop rcx
-                pop rdx
-                pop rbx
+                push qword [rbp]
+
+                mov rbp, r10 
+
+                mov qword [rbp], r10
+
+                add rbp, 8
+                sub rbp, 8
+
+                pop qword [r10]
+
+                mov rbp, 0x00fff00ff00f0f0f0
+                push rbp
+
+                pop qword [rax]
+                pop qword [rcx]
+                pop qword [rdx]
+                pop qword [rbx]
+
+                sqrtsd xmm0, xmm1
 
                 push qword [r10]
 

@@ -262,7 +262,6 @@ int FuncToAsm( Node* node, FILE* file )
     TreeToAsm( node->right, file );
 
     RemoveLocalVarsBlock( file );    // }
-    fprintf( file, "ret\n" );
     fprintf( file, "end%s:\n", L_VAR );
 
     return 1;
@@ -364,7 +363,7 @@ int VarRAMPosToAsm( const char* varName, FILE* file )
 
     int pos = GetTableVarPos( varName );
     
-    fprintf( file, "push rax + %d\n", pos );
+    fprintf( file, "push rax + %d\n", pos * sizeof( double ) );
     fprintf( file, "pop rbx ; set \"%s\" pos\n\n", varName );
 
     return pos;
