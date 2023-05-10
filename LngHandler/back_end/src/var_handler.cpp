@@ -44,7 +44,7 @@ int ShiftRegTop( FILE* file )
     int curStkPos  = StkVarTables.size - 1;
     if( curStkPos >= 0 ) // Shift rax
     {
-        fprintf( file, "push %d + rax\n", StkVarTables.data[ curStkPos ]->numVars );
+        fprintf( file, "push %d + rax\n", StkVarTables.data[ curStkPos ]->numVars * sizeof( double ) );
         fprintf( file, "pop rax ; Shifting top the var register\n" );
 
         LOG( "New block" );
@@ -73,29 +73,12 @@ int ShiftRegDown( FILE* file )
     int curStkPos  = StkVarTables.size - 1;
     if( curStkPos >= 0 )
     {
-        fprintf( file, "push %d + rax\n", -StkVarTables.data[ curStkPos ]->numVars );
+        fprintf( file, "push %d + rax\n", -StkVarTables.data[ curStkPos ]->numVars * sizeof( double ) );
         fprintf( file, "pop rax ; Shifting down the var register\n" );
         
         LOG( "Remove block" );
     }
 
-    return 1;
-}
-
-//-----------------------------------------------------------------------------
-
-int ShigtRegDownFunc( FILE* file )
-{
-    ASSERT( file != NULL, 0 );
-
-    for( int i = StkVarTables.size - 1; i >= 0; i-- )
-    {
-        fprintf( file, "push %d + rax\n", -StkVarTables.data[ i ]->numVars );
-        fprintf( file, "pop rax ; Shifting down the var register\n" );
-
-        if( StkVarTables.data[ i ]->isNewFunc ) break;
-    }
-    
     return 1;
 }
 
