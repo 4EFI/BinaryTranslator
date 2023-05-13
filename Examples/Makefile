@@ -1,4 +1,6 @@
 
+# unset GTK_PATH
+
 PP = ./../LngHandler/bin/ppp
 
 EX = ./../LngHandler/bin/cpu

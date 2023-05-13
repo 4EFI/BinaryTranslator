@@ -72,7 +72,7 @@ DEF_CMD( PUSH, 1,
     S_PUSH( arg_val );
 }
 #else
-{   
+{    
     NOP 
 
     if( cmd->immed || cmd->memory )
