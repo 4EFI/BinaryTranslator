@@ -5,12 +5,6 @@
 
 DEF_CMD( HLT, 0, 
 {
-#ifndef BT
-{
-    return 0;
-}
-#else
-{
     NOP
     
     // mov eax, 0x3c
@@ -21,8 +15,6 @@ DEF_CMD( HLT, 0,
     BIN_PRINT( 2, 0x0f, 0x05 );
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
@@ -67,12 +59,6 @@ DEF_CMD( HLT, 0,
 
 DEF_CMD( PUSH, 1, 
 {
-#ifndef BT
-{
-    S_PUSH( arg_val );
-}
-#else
-{    
     NOP 
 
     if( cmd->immed || cmd->memory )
@@ -93,20 +79,11 @@ DEF_CMD( PUSH, 1,
     }
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( ADD, 2, 
-{
-#ifndef BT
-{
-    S_POP_VALUES
-    S_PUSH( val_1 + val_2 );
-}
-#else
 {
     NOP
 
@@ -119,21 +96,12 @@ DEF_CMD( ADD, 2,
     LOAD_S_FROM_XMM0();
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( SUB, 3, 
 { 
-#ifndef BT
-{
-    S_POP_VALUES
-    S_PUSH( val_1 - val_2 );
-}
-#else
-{
     NOP
     
     LOAD_XMM1_FROM_S(); PP_RSP( 8 );
@@ -145,20 +113,11 @@ DEF_CMD( SUB, 3,
     LOAD_S_FROM_XMM0();
 
     NOP
-}
-#endif  
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( MUL, 4, 
-{
-#ifndef BT
-{
-    S_POP_VALUES
-    S_PUSH( val_1 * val_2 );
-}
-#else
 {
     NOP
     
@@ -171,20 +130,11 @@ DEF_CMD( MUL, 4,
     LOAD_S_FROM_XMM0();
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( DIV, 5, 
-{
-#ifndef BT
-{
-    S_POP_VALUES          
-    S_PUSH( val_1 / val_2 );
-}
-#else
 {
     NOP
     
@@ -197,33 +147,11 @@ DEF_CMD( DIV, 5,
     LOAD_S_FROM_XMM0();
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( OUT, 6, 
-{
-#ifndef BT
-{
-    if( arg_ptr )
-    {
-        if/* */( cmd.memory ) printf( "RAM[%d] = %g\n",  arg_ptr - cpu->RAM,  (double)(*arg_ptr) );
-        else if( cmd.reg    ) printf( "Regs[%d] = %g\n", arg_ptr - cpu->regs, (double)(*arg_ptr) );
-    }
-    else
-    {
-        S_POP( 1 )
-        if( CompareDoubles( val_1, 0 ) ) 
-        {
-            val_1 = 0;
-        }
-
-        printf( "%lf\n", double( val_1 ) );
-    }
-}
-#else
 {
     NOP
     
@@ -242,21 +170,12 @@ DEF_CMD( OUT, 6,
     BIN_PRINT( 3, 0x41, 0xff, 0xd2 ); PP_RSP( 16 );
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( POP, 7, 
 { 
-#ifndef BT
-{
-    S_POP( 1 )
-    *arg_ptr = val_1;
-}
-#else
-{
     NOP 
 
     if( cmd->immed || cmd->memory )
@@ -279,20 +198,12 @@ DEF_CMD( POP, 7,
     }
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 // Jumps
 DEF_CMD( JMP, 8, 
-{
-#ifndef BT
-{
-    ip = arg_val;
-}
-#else
 {
     NOP
 
@@ -304,22 +215,9 @@ DEF_CMD( JMP, 8,
     ADD_JMP(); PP( 4 );
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
-
-#ifndef BT
-
-#define DEF_JMP( NAME, NUM, UNUSED_0, UNUSED_1, COND, UNUSED_2 )    \
-    DEF_CMD( NAME, NUM,                                             \
-    {                                                               \
-        S_POP_VALUES                                                \
-        if( val_1 COND val_2 ) ip = int(arg_val);                   \
-    })
-
-#else
 
 #define DEF_JMP( NAME, NUM, UNUSED_0, UNUSED_1, COND, CMP_TYPE )                        \
     DEF_CMD( NAME, NUM,                                                                 \
@@ -346,8 +244,6 @@ DEF_CMD( JMP, 8,
         NOP                                                                             \
     })                                  
 
-#endif
-
 #include "jumps.h"
 
 #undef DEF_JMP
@@ -356,30 +252,11 @@ DEF_CMD( JMP, 8,
 
 DEF_CMD( IN, 15, 
 {
-#ifndef BT
-{
-    Elem_t val = 0;
-    scanf( "%lf", &val );
-    
-    S_PUSH( val );
-}
-#else
-{
-    //
-} 
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( SQRT, 16, 
-{
-#ifndef BT
-{
-    S_POP( 1 )
-    S_PUSH( sqrt( val_1 ) );
-}
-#else
 {
     NOP
     
@@ -391,20 +268,11 @@ DEF_CMD( SQRT, 16,
     LOAD_S_FROM_XMM0();
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( CALL, 17, 
-{
-#ifndef BT
-{
-    S_RET_PUSH( ip );
-    ip = arg_val;
-}
-#else
 {
     NOP
 
@@ -424,19 +292,11 @@ DEF_CMD( CALL, 17,
     ADD_JMP(); PP( 4 );
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( RET, 18, 
-{
-#ifndef BT
-{
-    ip = S_RET_POP;
-}
-#else
 {
     NOP
     
@@ -446,72 +306,30 @@ DEF_CMD( RET, 18,
     BIN_PRINT( 1, 0xC3 );
 
     NOP
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( SIN, 19, 
 {
-#ifndef BT
-{
-    S_POP( 1 );
-    S_PUSH( sin( val_1 ) );
-}
-#else
-{
-
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( COS, 20, 
 {
-#ifndef BT
-{
-    S_POP( 1 );
-    S_PUSH( cos( val_1 ) );
-}
-#else
-{
-
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 DEF_CMD( POW, 21, 
 {
-#ifndef BT
-{
-    S_POP_VALUES          
-    S_PUSH( pow( val_1, val_2 ) );
-}
-#else
-{
-        
-}   
-#endif 
 })
 
 //-----------------------------------------------------------------------------
 
 // CMP: is_ee, is_ne, etc...
-#ifndef BT
 
-#define DEF_JMP( UNUSED_0, UNUSED_1, NAME, NUM, COND, UNUSED_2 )    \
-    DEF_CMD( NAME, NUM,                                             \
-    {                                                               \
-        S_POP_VALUES                                                \
-        S_PUSH( val_1 COND val_2 );                                 \
-    })
-
-#else
-    
 #define DEF_JMP( UNUSED_0, UNUSED_1, NAME, NUM, COND, CMP_TYPE )    \
     DEF_CMD( NAME, NUM,                                             \
     {                                                               \
@@ -527,8 +345,6 @@ DEF_CMD( POW, 21,
         NOP                                                         \
     })  
 
-#endif
-
 #include "jumps.h"
 
 #undef DEF_JMP
@@ -537,25 +353,6 @@ DEF_CMD( POW, 21,
 
 DEF_CMD( DUMP, 31, 
 {
-#ifndef BT
-{ 
-     if( LogFile ) StackDump( &cpu->stack );
-
-    CpuCmdDump( cpu, ip, LogFile );
-    CpuRegDump( cpu,     LogFile );
-
-    fprintf( LogFile, "\n" );
-
-    CpuRamDump( cpu, LogFile );
-
-    PrintSyms( '-', NumDumpDividers, LogFile );
-    fprintf  ( LogFile, "\n" );
-}
-#else
-{
-
-}
-#endif 
 })
 
 //-----------------------------------------------------------------------------

@@ -64,14 +64,13 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
         bin_trtor->commands[i].bin_code_pos = int( curr_str_ptr - bin_trtor->bin_code );
         
         // get cmd 
-        memcpy( &bin_trtor->commands[i].cmd, curr_str_ptr++, sizeof( char ) ); 
+        bin_trtor->commands[i].cmd = *( CMD * )curr_str_ptr++;
 
         CMD* cmd = &bin_trtor->commands[i].cmd;
 
         if( cmd->immed )
         {
-            double   val = 0;
-            memcpy( &val, curr_str_ptr, sizeof( double ) );
+            double val = *( double * )curr_str_ptr;
 
             bin_trtor->commands[i].val = val; 
             curr_str_ptr += sizeof( double );
@@ -79,8 +78,7 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor )
 
         if( cmd->reg )
         {
-            char     reg_num = 0;
-            memcpy( &reg_num, curr_str_ptr++, sizeof( char ) );
+            char reg_num = *curr_str_ptr++;
 
             bin_trtor->commands[i].reg_num = reg_num;
         }
@@ -114,7 +112,7 @@ struct Jmp
 
 int FillJumpsVal( Jmp* jmps_arr, int num )
 {
-    for( size_t i = 0; i < num; i++ )
+    for( int i = 0; i < num; i++ )
     {
         u_int32_t jmp_val = ( u_int32_t )( *jmps_arr[i].jmp_val - u_int64_t( jmps_arr[i].jmp_val_ptr ) - sizeof( u_int32_t ) );
 
@@ -162,8 +160,8 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
                 break;
 
         switch( cmd->code ) 
-        {
-            #include "commands.h"
+        {   
+            #include "commands_x86.h"
             default:
                 printf( "SIGILL\n" );
                 return -1;

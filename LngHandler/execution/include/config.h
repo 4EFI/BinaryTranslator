@@ -14,7 +14,7 @@ static const int RamSize       = RamWidthSize * RamHeightSize;
 
 #define MaxStrLen 255 
 
-static int NumDumpDividers = 65;
+static const int NumDumpDividers = 65;
 
 //-----------------------------------------------------------------------------
 
@@ -48,7 +48,7 @@ static int SignatureBlockSize = 9;
 
 enum CmdNames
 {
-    #include "commands.h"
+    #include "commands_my.h"
 };
 
 #undef DEF_CMD

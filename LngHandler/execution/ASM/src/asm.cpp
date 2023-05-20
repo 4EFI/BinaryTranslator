@@ -120,7 +120,7 @@ int AsmMakeArrCmds( ASM* asm_s, FILE* listing_file )
             }                                                                               \
             else
 
-        #include "commands.h"
+        #include "commands_my.h"
         /*else*/
         {
             printf( "Command \"%s\" does not exist...\n", cmdName );

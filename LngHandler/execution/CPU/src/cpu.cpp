@@ -100,7 +100,7 @@ int CpuCmdsHandler( CPU* cpu )
 
         switch( cmd.code )
         {
-            #include "commands.h"
+            #include "commands_my.h"
             default:
                 printf( "SIGILL\n" );
                 return -1;
