@@ -294,11 +294,16 @@ push rax + 8
 pop rbx ; set "a" pos
 
 push [ rbx ] ; push "a"
-push 32 + rax
+push 40 + rax
 pop rax ; Shifting top the var register
 call :Reshit'Kvadratku
-push -32 + rax
+push -40 + rax
 pop rax ; Shifting down the var register
+push rax + 32
+pop rbx ; set "kolichestvo_kornei" pos
+
+pop [ rbx ] ; set "kolichestvo_kornei"
+
 push 0
 ret
 endMein:

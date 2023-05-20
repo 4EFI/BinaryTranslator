@@ -10,6 +10,8 @@ const int StackSize = 1000;
 
 //-----------------------------------------------------------------------------
 
+enum BinType { JIT, ELF };
+
 struct Command
 {
     CMD cmd;
@@ -43,15 +45,16 @@ int BinTrtorDtor( BinTrtor* bin_trtor );
 
 int BinTrtorParseBinCode( BinTrtor* bin_trtor );
 
-int BinTrtorToX86( BinTrtor* bin_trtor );
+int BinTrtorToX86( BinTrtor* bin_trtor, int bin_type );
 
-int BinTrtorRun( BinTrtor* bin_trtor );
+int BinTrtorRun  ( BinTrtor* bin_trtor );
+int BinTrtorToELF( BinTrtor* bin_trtor, const char file_name );
 
 //-----------------------------------------------------------------------------
 
 int CheckBinCodeSignature( const char* bin_code );
 
-int BinPrint( char* bin_code, int size, ... );
+int BinEmit( char* bin_code, int size, ... );
 
 extern "C" int _printf( const char* str, ... ); 
 

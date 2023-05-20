@@ -213,10 +213,13 @@
 000000040A | 61 0000000000002040 00            push rax + 8
 0000000414 | 47 03                             pop rbx ; set "a" pos
 0000000416 | C1 03                             push [ rbx ] ; push "a"
-0000000418 | 61 0000000000004040 00            push 32 + rax
+0000000418 | 61 0000000000004440 00            push 40 + rax
 0000000422 | 47 00                             pop rax ; Shifting top the var register
 0000000424 | 31 0000000000002440               call :Reshit'Kvadratku
-000000042D | 61 00000000000040C0 00            push -32 + rax
+000000042D | 61 00000000000044C0 00            push -40 + rax
 0000000437 | 47 00                             pop rax ; Shifting down the var register
-0000000439 | 21 0000000000000000               push 0
-0000000442 | 12                                ret
+0000000439 | 61 0000000000004040 00            push rax + 32
+0000000443 | 47 03                             pop rbx ; set "kolichestvo_kornei" pos
+0000000445 | C7 03                             pop [ rbx ] ; set "kolichestvo_kornei"
+0000000447 | 21 0000000000000000               push 0
+0000000450 | 12                                ret

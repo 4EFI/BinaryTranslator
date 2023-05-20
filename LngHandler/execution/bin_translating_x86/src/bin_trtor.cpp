@@ -5,6 +5,7 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <stdarg.h>
+#include <elf.h>
 
 #include "bin_trtor.h"
 
@@ -122,7 +123,7 @@ int FillJumpsVal( Jmp* jmps_arr, int num )
     return 0;
 }
 
-#define XOR( reg ) BIN_PRINT( 3, 0x48, 0x31, reg );
+#define XOR( reg ) BIN_EMIT( 3, 0x48, 0x31, reg );
 
 #define NULL_REGS()             \
 {                               \
@@ -132,7 +133,7 @@ int FillJumpsVal( Jmp* jmps_arr, int num )
     XOR( 0xdb ); /* rbx */      \
 }                               \
 
-int BinTrtorToX86( BinTrtor* bin_trtor )
+int BinTrtorToX86( BinTrtor* bin_trtor, int bin_type )
 {
     char* bin_code_x86_ptr = bin_trtor->bin_code_x86; 
 
@@ -143,7 +144,7 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
     MOV_R10_PTR( bin_trtor->stack_ret );
     
     // mov rbp, r10
-    BIN_PRINT( 3, 0x4c, 0x89, 0xd5 ); 
+    BIN_EMIT( 3, 0x4c, 0x89, 0xd5 ); 
 
     NULL_REGS();
 
@@ -173,11 +174,11 @@ int BinTrtorToX86( BinTrtor* bin_trtor )
     }
 
     FillJumpsVal( jmps_arr, curr_jmp );
-
-    *(bin_code_x86_ptr++) = char( 0xC3 ); // add 'ret' to end of buffer
     
     return 1;
 }
+
+//-----------------------------------------------------------------------------
 
 int BinTrtorRun( BinTrtor* bin_trtor )
 {
@@ -187,8 +188,26 @@ int BinTrtorRun( BinTrtor* bin_trtor )
     if( is_prot ) exit( errno );
 
     void ( *exec_function )( void ) = ( void ( * )( void ) )( bin_trtor->bin_code_x86 );
-    exec_function();
 
+    asm( "push %rsi\n push %rdi\n push %rbp\n push %r10\n push %r11\n");
+    exec_function();
+    asm( "pop %r11\n pop %r10\n pop %rbp\n pop %rdi\n pop %rsi\n" );
+
+    printf( "asdfas\n" );
+
+    mprotect( bin_trtor->bin_code_x86, 
+              bin_trtor->bin_code_x86_size,
+              PROT_READ | PROT_WRITE );
+
+    return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+int BinTrtorToELF( BinTrtor* bin_trtor, const char file_name )
+{
+    
+    
     return 1;
 }
 
@@ -215,7 +234,7 @@ int CheckBinCodeSignature( const char* bin_code )
 
 //-----------------------------------------------------------------------------
 
-int BinPrint( char* bin_code, int size, ... )
+int BinEmit( char* bin_code, int size, ... )
 {
     va_list   args = {};
     va_start( args, size );

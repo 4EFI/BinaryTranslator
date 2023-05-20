@@ -6,6 +6,12 @@
 #include "file_algs.h"
 
 //-----------------------------------------------------------------------------
+// mov r10, _printf
+// call r10
+// mov r10, memory ;mov r10, 0x2000
+
+
+// mov r10, 0x3000
 
 int main( int argc, char* argv[] )
 {    
@@ -22,7 +28,7 @@ int main( int argc, char* argv[] )
     BinTrtorCtor( &bin_trtor, bin_code );
 
     BinTrtorParseBinCode( &bin_trtor );
-    BinTrtorToX86       ( &bin_trtor );
+    BinTrtorToX86       ( &bin_trtor, BinType::JIT );
     BinTrtorRun         ( &bin_trtor );
 
     BinTrtorDtor( &bin_trtor );

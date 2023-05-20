@@ -12,5 +12,5 @@ compile :
 	./../LngHandler/bin/cpu a.code
 
 bin : 
-	$(BT) a.code	
+	edb --run $(BT) a.code	
 

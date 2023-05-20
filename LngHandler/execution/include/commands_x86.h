@@ -7,12 +7,22 @@ DEF_CMD( HLT, 0,
 {
     NOP
     
-    // mov eax, 0x3c
-    BIN_PRINT( 5, 0xb8, 0x3c, 0x00, 0x00, 0x00 );
-    // xor rdi, rdi
-    BIN_PRINT( 3, 0x48, 0x31, 0xff );
-    // syscall 
-    BIN_PRINT( 2, 0x0f, 0x05 );
+    if( bin_type == ELF )
+    {
+        // mov eax, 0x3c
+        BIN_EMIT( 5, 0xb8, 0x3c, 0x00, 0x00, 0x00 );
+        // xor rdi, rdi
+        BIN_EMIT( 3, 0x48, 0x31, 0xff );
+        // syscall 
+        BIN_EMIT( 2, 0x0f, 0x05 );
+    }
+    else
+    {
+        PP_RSP( 8 );
+
+        // ret
+        BIN_EMIT( 1, 0xC3 );
+    }
 
     NOP
 })
@@ -24,17 +34,17 @@ DEF_CMD( HLT, 0,
     if( cmd->reg )                                          \
     {                                                       \
         /* movq xmm1, r10 */                                \
-        BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x6e, 0xca );       \
+        BIN_EMIT( 5, 0x66, 0x49, 0x0f, 0x6e, 0xca );       \
                                                             \
         LOAD_XMM0_FROM_RX( BIN_TRTOR_CMD( i ).reg_num );    \
                                                             \
         /* addsd xmm0, xmm1 */                              \
-        BIN_PRINT( 4, 0xf2, 0x0f, 0x58, 0xc1 );             \
+        BIN_EMIT( 4, 0xf2, 0x0f, 0x58, 0xc1 );             \
     }                                                       \
     else if( cmd->memory )                                  \
     {                                                       \
         /* movq xmm0, r10 */                                \
-        BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x6e, 0xc2 );       \
+        BIN_EMIT( 5, 0x66, 0x49, 0x0f, 0x6e, 0xc2 );       \
     }                                                       \
 }
 
@@ -50,7 +60,7 @@ DEF_CMD( HLT, 0,
         if( cmd->reg && cmd->immed )                        \
         {                                                   \
             /* movq r10, xmm0 */                            \
-            BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x7e, 0xc2 );   \
+            BIN_EMIT( 5, 0x66, 0x49, 0x0f, 0x7e, 0xc2 );   \
         }                                                   \
                                                             \
         PUSH_R10();                                         \
@@ -91,7 +101,7 @@ DEF_CMD( ADD, 2,
     LOAD_XMM0_FROM_S();
 
     // addsd xmm0, xmm1
-    BIN_PRINT( 4, 0xf2, 0x0f, 0x58, 0xc1 );
+    BIN_EMIT( 4, 0xf2, 0x0f, 0x58, 0xc1 );
 
     LOAD_S_FROM_XMM0();
 
@@ -108,7 +118,7 @@ DEF_CMD( SUB, 3,
     LOAD_XMM0_FROM_S();
 
     // subsd xmm0, xmm1
-    BIN_PRINT( 4, 0xf2, 0x0f, 0x5c, 0xc1 );
+    BIN_EMIT( 4, 0xf2, 0x0f, 0x5c, 0xc1 );
 
     LOAD_S_FROM_XMM0();
 
@@ -125,7 +135,7 @@ DEF_CMD( MUL, 4,
     LOAD_XMM0_FROM_S();
 
     // mulsd xmm0, xmm1
-    BIN_PRINT( 4, 0xf2, 0x0f, 0x59, 0xc1 );
+    BIN_EMIT( 4, 0xf2, 0x0f, 0x59, 0xc1 );
 
     LOAD_S_FROM_XMM0();
 
@@ -142,7 +152,7 @@ DEF_CMD( DIV, 5,
     LOAD_XMM0_FROM_S();
 
     // divsd xmm0, xmm1
-    BIN_PRINT( 4, 0xf2, 0x0f, 0x5e, 0xc1 );
+    BIN_EMIT( 4, 0xf2, 0x0f, 0x5e, 0xc1 );
 
     LOAD_S_FROM_XMM0();
 
@@ -167,7 +177,7 @@ DEF_CMD( OUT, 6,
     MOV_R10_PTR( _printf );
 
     // call r10
-    BIN_PRINT( 3, 0x41, 0xff, 0xd2 ); PP_RSP( 16 );
+    BIN_EMIT( 3, 0x41, 0xff, 0xd2 ); PP_RSP( 16 );
 
     NOP
 })
@@ -190,7 +200,7 @@ DEF_CMD( POP, 7,
         CVT_XMM0_TO_INT();
 
         // pop qword [r10]
-        BIN_PRINT( 3, 0x41, 0x8f, 0x02 );
+        BIN_EMIT( 3, 0x41, 0x8f, 0x02 );
     }
     else
     {        
@@ -210,7 +220,7 @@ DEF_CMD( JMP, 8,
     size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) ); 
 
     // jmp ... 
-    BIN_PRINT( 1, 0xe9 );
+    BIN_EMIT( 1, 0xe9 );
     
     ADD_JMP(); PP( 4 );
 
@@ -230,14 +240,14 @@ DEF_CMD( JMP, 8,
         CMPSD_XMM0_XMM1( CMP_TYPE );                                                    \
                                                                                         \
         /* movq r10, xmm0 */                                                            \
-        BIN_PRINT( 5, 0x66, 0x49, 0x0f, 0x7e, 0xc2 );                                   \
+        BIN_EMIT( 5, 0x66, 0x49, 0x0f, 0x7e, 0xc2 );                                   \
                                                                                         \
         size_t cmd_num = FindLabelCommand( bin_trtor, int( BIN_TRTOR_CMD( i ).val ) );  \
                                                                                         \
         /* cmp r10, 0 */                                                                \
-        BIN_PRINT( 4, 0x49, 0x83, 0xfa, 0x00 );                                         \
+        BIN_EMIT( 4, 0x49, 0x83, 0xfa, 0x00 );                                         \
         /* jne ... */                                                                   \
-        BIN_PRINT( 2, 0x0f, 0x85 /* ... */ );                                           \
+        BIN_EMIT( 2, 0x0f, 0x85 /* ... */ );                                           \
                                                                                         \
         ADD_JMP(); PP( 4 );                                                             \
                                                                                         \
@@ -263,7 +273,7 @@ DEF_CMD( SQRT, 16,
     LOAD_XMM1_FROM_S();
 
     // sqrtsd xmm0, xmm1
-    BIN_PRINT( 4, 0xf2, 0x0f, 0x51, 0xc1 );
+    BIN_EMIT( 4, 0xf2, 0x0f, 0x51, 0xc1 );
 
     LOAD_S_FROM_XMM0();
 
@@ -284,10 +294,10 @@ DEF_CMD( CALL, 17,
     MOV_R10_PTR( bin_code_x86_ptr + 12 /*movs code size*/ + 5 /*jmp code size*/ );
 
     // mov qword [rbp], r10
-    BIN_PRINT( 4, 0x4c, 0x89, 0x55, 0x00 ); 
+    BIN_EMIT( 4, 0x4c, 0x89, 0x55, 0x00 ); 
 
     // jmp ... 
-    BIN_PRINT( 1, 0xe9 );
+    BIN_EMIT( 1, 0xe9 );
     
     ADD_JMP(); PP( 4 );
 
@@ -301,9 +311,9 @@ DEF_CMD( RET, 18,
     NOP
     
     // push qword [rbp] ; push ret_addr
-    BIN_PRINT( 3, 0xff, 0x75, 0x00 ); MM_RBP( 8 );
+    BIN_EMIT( 3, 0xff, 0x75, 0x00 ); MM_RBP( 8 );
     // ret
-    BIN_PRINT( 1, 0xC3 );
+    BIN_EMIT( 1, 0xC3 );
 
     NOP
 })
