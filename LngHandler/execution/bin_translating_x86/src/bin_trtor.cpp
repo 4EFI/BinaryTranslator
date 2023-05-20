@@ -5,7 +5,6 @@
 #include <errno.h>
 #include <sys/mman.h>
 #include <stdarg.h>
-#include <elf.h>
 
 #include "bin_trtor.h"
 
@@ -139,9 +138,11 @@ int BinTrtorToX86( BinTrtor* bin_trtor, int bin_type )
 
     Jmp* jmps_arr = ( Jmp* )calloc( NumLabels, sizeof( Jmp ) );
     int  curr_jmp = 0;
+    
 
     // mov r10, stack_ret_addr 
-    MOV_R10_PTR( bin_trtor->stack_ret );
+    if( bin_type == BinType::JIT ) { MOV_R10_PTR( bin_trtor->stack_ret ); } // JIT
+    else                           { MOV_R10_PTR( STK_ADDR );             } // ELF
     
     // mov rbp, r10
     BIN_EMIT( 3, 0x4c, 0x89, 0xd5 ); 
@@ -174,6 +175,8 @@ int BinTrtorToX86( BinTrtor* bin_trtor, int bin_type )
     }
 
     FillJumpsVal( jmps_arr, curr_jmp );
+
+    bin_trtor->bin_code_x86_size = bin_code_x86_ptr - bin_trtor->bin_code_x86;
     
     return 1;
 }
@@ -189,11 +192,9 @@ int BinTrtorRun( BinTrtor* bin_trtor )
 
     void ( *exec_function )( void ) = ( void ( * )( void ) )( bin_trtor->bin_code_x86 );
 
-    asm( "push %rsi\n push %rdi\n push %rbp\n push %r10\n push %r11\n");
+    asm( "push %rax\n push %rbx\n push %rcx\n push %rdx\n push %rsi\n push %rdi\n push %rbp\n push %r10\n");
     exec_function();
-    asm( "pop %r11\n pop %r10\n pop %rbp\n pop %rdi\n pop %rsi\n" );
-
-    printf( "asdfas\n" );
+    asm( "pop %r10\n pop %rbp\n pop %rdi\n pop %rsi\n pop %rdx\n pop %rcx\n pop %rbx\n pop %rax\n" );
 
     mprotect( bin_trtor->bin_code_x86, 
               bin_trtor->bin_code_x86_size,
@@ -204,10 +205,63 @@ int BinTrtorRun( BinTrtor* bin_trtor )
 
 //-----------------------------------------------------------------------------
 
-int BinTrtorToELF( BinTrtor* bin_trtor, const char file_name )
+int BinTrtorToELF( BinTrtor* bin_trtor, const char* file_name )
 {
+    char zero_fill[0x4001] = {0};
+
+    FILE* exec = fopen( file_name, "w" );
+
+    fwrite( zero_fill, 0x4001, 1, exec );
+    fseek ( exec, 0x0, SEEK_SET );
+
+    Elf64_Ehdr elf_header = 
+    {
+        .e_ident = 
+        { 
+            /* (EI_NIDENT bytes)  */
+            /* [0] EI_MAG:        */ 0x7F,'E','L','F',
+            /* [4] EI_CLASS:      */ 2 , /* (ELFCLASS64)    */
+            /* [5] EI_DATA:       */ 1 , /* (ELFDATA2LSB)   */
+            /* [6] EI_VERSION:    */ 1 , /* (EV_CURRENT)    */
+            /* [7] EI_OSABI:      */ 0 , /* (ELFOSABI_NONE) */
+            /* [8] EI_ABIVERSION: */ 0 ,
+            /* [9-15] EI_PAD:     */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
+        },
+        .e_type      = 2          , /* (ET_EXEC) */
+        .e_machine   = 62         , /* (EM_X86_64) */
+        .e_version   = 1          , /* (EV_CURRENT) */
+        .e_entry     = TEXT_ADDR  , /* (start address at runtime) */
+        .e_phoff     = 64         , /* (bytes into file) */
+        .e_shoff     = 0x4001     , /* (bytes into file) */
+        .e_flags     = 0x0        ,
+        .e_ehsize    = 64         , /* (bytes) */
+        .e_phentsize = 56         , /* (bytes) */
+        .e_phnum     = 5          , /* (program headers) */
+        .e_shentsize = 64         , /* (bytes) */
+        .e_shnum     = 0          , /* (section headers) */
+        .e_shstrndx  = 0         
+    };
+
+    Elf64_Phdr first_pg_header  = HeaderInit( PF_R,        LOAD_ADDR );
+    Elf64_Phdr second_pg_header = HeaderInit( PF_R | PF_X, TEXT_ADDR );
+    Elf64_Phdr ram_header       = HeaderInit( PF_R | PF_W, RAM_ADDR  );
+    Elf64_Phdr stack_header     = HeaderInit( PF_R | PF_W, STK_ADDR  );
+    Elf64_Phdr library_header   = HeaderInit( PF_R | PF_X, LIB_ADDR  );
+
+    fwrite( &elf_header,       sizeof( elf_header       ), 1, exec );
+    fwrite( &first_pg_header,  sizeof( first_pg_header  ), 1, exec );
+    fwrite( &second_pg_header, sizeof( second_pg_header ), 1, exec );
+    fwrite( &ram_header,       sizeof( ram_header       ), 1, exec );
+    fwrite( &stack_header,     sizeof( stack_header     ), 1, exec );
+    fwrite( &library_header,   sizeof( library_header   ), 1, exec );
     
-    
+    fseek ( exec, PAGE_SIZE, SEEK_SET );
+    fwrite( bin_trtor->bin_code_x86, 1, bin_trtor->bin_code_x86_size, exec );
+
+    fseek (exec, 0x4000, SEEK_SET);
+    // Add_lib ("programs/lib.out", exec);
+
+    fclose (exec);   
     return 1;
 }
 
@@ -248,6 +302,25 @@ int BinEmit( char* bin_code, int size, ... )
     va_end( args );
 
     return 1;
+}
+
+//-----------------------------------------------------------------------------
+
+Elf64_Phdr HeaderInit( Elf64_Word p_flags, Elf64_Addr addr )
+{
+    Elf64_Phdr self = 
+    {
+        .p_type   = 1               , /* [PT_LOAD] */
+        .p_flags  = p_flags         , /* PF_R */
+        .p_offset = addr - LOAD_ADDR, /* (bytes into file) */
+        .p_vaddr  = addr            , /* (virtual addr at runtime) */
+        .p_paddr  = addr            , /* (physical addr at runtime) */
+        .p_filesz = CODE_SIZE       , /* (bytes in file) */
+        .p_memsz  = DATA_SIZE       , /* (bytes in mem at runtime) */
+        .p_align  = PAGE_SIZE       ,/* (min mem alignment in bytes) */
+    };
+
+    return self;
 }
 
 //-----------------------------------------------------------------------------

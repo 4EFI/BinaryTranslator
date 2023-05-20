@@ -1,0 +1,108 @@
+#include <elf.h>
+
+/*
+ * ELF dump of 'out'
+ *     16385 (0x4001) bytes
+ */
+
+Elf64_Dyn dumpedelf_dyn_0[];
+struct {
+	Elf64_Ehdr ehdr;
+	Elf64_Phdr phdrs[5];
+	Elf64_Shdr shdrs[0];
+	Elf64_Dyn *dyns;
+} dumpedelf_0 = {
+
+.ehdr = {
+	.e_ident = { /* (EI_NIDENT bytes) */
+		/* [0] EI_MAG:        */ 0x7F,'E','L','F',
+		/* [4] EI_CLASS:      */ 2 , /* (ELFCLASS64) */
+		/* [5] EI_DATA:       */ 1 , /* (ELFDATA2LSB) */
+		/* [6] EI_VERSION:    */ 1 , /* (EV_CURRENT) */
+		/* [7] EI_OSABI:      */ 0 , /* (ELFOSABI_NONE) */
+		/* [8] EI_ABIVERSION: */ 0 ,
+		/* [9-15] EI_PAD:     */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0,
+	},
+	.e_type      = 2          , /* (ET_EXEC) */
+	.e_machine   = 62         , /* (EM_X86_64) */
+	.e_version   = 1          , /* (EV_CURRENT) */
+	.e_entry     = 0x400000   , /* (start address at runtime) */
+	.e_phoff     = 64         , /* (bytes into file) */
+	.e_shoff     = 16385      , /* (bytes into file) */
+	.e_flags     = 0x0        ,
+	.e_ehsize    = 64         , /* (bytes) */
+	.e_phentsize = 56         , /* (bytes) */
+	.e_phnum     = 5          , /* (program headers) */
+	.e_shentsize = 64         , /* (bytes) */
+	.e_shnum     = 0          , /* (section headers) */
+	.e_shstrndx  = 0         
+},
+
+.phdrs = {
+/* Program Header #0 0x40 */
+{
+	.p_type   = 1          , /* [PT_LOAD] */
+	.p_offset = 0          , /* (bytes into file) */
+	.p_vaddr  = 0x400000   , /* (virtual addr at runtime) */
+	.p_paddr  = 0x400000   , /* (physical addr at runtime) */
+	.p_filesz = 8192       , /* (bytes in file) */
+	.p_memsz  = 8192       , /* (bytes in mem at runtime) */
+	.p_flags  = 0x4        , /* PF_R */
+	.p_align  = 4096       , /* (min mem alignment in bytes) */
+},
+/* Program Header #1 0x78 */
+{
+	.p_type   = 1          , /* [PT_LOAD] */
+	.p_offset = 4096       , /* (bytes into file) */
+	.p_vaddr  = 0x401000   , /* (virtual addr at runtime) */
+	.p_paddr  = 0x401000   , /* (physical addr at runtime) */
+	.p_filesz = 8192       , /* (bytes in file) */
+	.p_memsz  = 8192       , /* (bytes in mem at runtime) */
+	.p_flags  = 0x5        , /* PF_R | PF_X */
+	.p_align  = 4096       , /* (min mem alignment in bytes) */
+},
+/* Program Header #2 0xB0 */
+{
+	.p_type   = 1          , /* [PT_LOAD] */
+	.p_offset = 12288      , /* (bytes into file) */
+	.p_vaddr  = 0x403000   , /* (virtual addr at runtime) */
+	.p_paddr  = 0x403000   , /* (physical addr at runtime) */
+	.p_filesz = 8192       , /* (bytes in file) */
+	.p_memsz  = 8192       , /* (bytes in mem at runtime) */
+	.p_flags  = 0x6        , /* PF_R | PF_W */
+	.p_align  = 4096       , /* (min mem alignment in bytes) */
+	/* Warning: Program segment is corrupt. */
+},
+/* Program Header #3 0xE8 */
+{
+	.p_type   = 1          , /* [PT_LOAD] */
+	.p_offset = 16384      , /* (bytes into file) */
+	.p_vaddr  = 0x404000   , /* (virtual addr at runtime) */
+	.p_paddr  = 0x404000   , /* (physical addr at runtime) */
+	.p_filesz = 8192       , /* (bytes in file) */
+	.p_memsz  = 8192       , /* (bytes in mem at runtime) */
+	.p_flags  = 0x6        , /* PF_R | PF_W */
+	.p_align  = 4096       , /* (min mem alignment in bytes) */
+	/* Warning: Program segment is corrupt. */
+},
+/* Program Header #4 0x120 */
+{
+	.p_type   = 1          , /* [PT_LOAD] */
+	.p_offset = 20480      , /* (bytes into file) */
+	.p_vaddr  = 0x405000   , /* (virtual addr at runtime) */
+	.p_paddr  = 0x405000   , /* (physical addr at runtime) */
+	.p_filesz = 8192       , /* (bytes in file) */
+	.p_memsz  = 8192       , /* (bytes in mem at runtime) */
+	.p_flags  = 0x5        , /* PF_R | PF_X */
+	.p_align  = 4096       , /* (min mem alignment in bytes) */
+	/* Warning: Program segment is corrupt. */
+},
+},
+
+.shdrs = {
+ /* no section headers ! */ },
+
+.dyns = dumpedelf_dyn_0,
+};
+Elf64_Dyn dumpedelf_dyn_0[] = {
+ /* no dynamic tags ! */ };

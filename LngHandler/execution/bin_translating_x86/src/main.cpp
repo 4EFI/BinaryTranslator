@@ -6,15 +6,11 @@
 #include "file_algs.h"
 
 //-----------------------------------------------------------------------------
-// mov r10, _printf
-// call r10
-// mov r10, memory ;mov r10, 0x2000
-
-
-// mov r10, 0x3000
 
 int main( int argc, char* argv[] )
 {    
+    printf( "asdfsf\n" );
+    
     const char*    bin_file_name = NULL;
     if( argc > 1 ) bin_file_name = argv[1]; else printf( "Input file have not given...\n" ); 
 
@@ -28,8 +24,8 @@ int main( int argc, char* argv[] )
     BinTrtorCtor( &bin_trtor, bin_code );
 
     BinTrtorParseBinCode( &bin_trtor );
-    BinTrtorToX86       ( &bin_trtor, BinType::JIT );
-    BinTrtorRun         ( &bin_trtor );
+    BinTrtorToX86       ( &bin_trtor, BinType::ELF );
+    BinTrtorToELF       ( &bin_trtor, "out" );
 
     BinTrtorDtor( &bin_trtor );
 }

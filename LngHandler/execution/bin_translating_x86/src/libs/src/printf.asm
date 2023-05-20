@@ -39,18 +39,18 @@ section .text
 None:           push rsi
                 push '%'
                 mov  rsi, rsp 
-                call putchar
+                call _putchar
                 pop  rsi
                 pop  rsi
                 ret
 
-Percent:        call putchar
+Percent:        call _putchar
                 inc  rsi
                 ret
 
 Char:           push rsi
                 GetArgAddr
-                call putchar
+                call _putchar
                 pop  rsi
                 inc  rsi
                 ret
@@ -84,7 +84,7 @@ Oct:            push rsi
 String:         push rsi
                 GetArgAddr 
                 mov  rsi, [rsi] 
-                call puts
+                call _puts
                 pop  rsi
                 inc  rsi
                 ret
@@ -130,7 +130,7 @@ _printf:      ; proc
 
                                 .NotPercent:
 
-                                call putchar
+                                call _putchar
                                 inc  rsi
 
                                 jmp .Next       
@@ -185,16 +185,16 @@ c_printf        ; proc
                 ; endp
 
 ;------------------------------------------------
-;   putchar( char* ch_ptr )
+;   _putchar( char* ch_ptr )
 ;------------------------------------------------
 ; entry:    rsi = ch_ptr
 ; exit:     none
 ; destroys: none
 ;------------------------------------------------
 
-global putchar
+global _putchar
 
-putchar:        ; proc
+_putchar:        ; proc
 
                 push rax
                 push rdi
@@ -217,7 +217,7 @@ putchar:        ; proc
                 ; endp
 
 ;------------------------------------------------
-;   puts( char* str_ptr )
+;   _puts( char* str_ptr )
 ;------------------------------------------------
 ; entry:    rsi = str_ptr
 ; exit:     none
@@ -225,16 +225,16 @@ putchar:        ; proc
 ; destroys: none
 ;------------------------------------------------
 
-global puts
+global _puts
 
-puts:           ; proc
+_puts:           ; proc
 
                 push rsi
 
                 .Next:          cmp byte [rsi], 0   ; if( curr_sym == '\0' )
                                 je .End
 
-                                call putchar
+                                call _putchar
                                 inc  rsi            ; str_ptr++
 
                                 jmp .Next

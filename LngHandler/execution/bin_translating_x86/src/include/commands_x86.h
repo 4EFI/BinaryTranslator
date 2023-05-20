@@ -75,7 +75,13 @@ DEF_CMD( PUSH, 1,
     {
         double val = 0;
         if( cmd->immed  ) val += BIN_TRTOR_CMD( i ).val;
-        if( cmd->memory ) val += double( ( u_int64_t )( bin_trtor->RAM ) );
+        if( cmd->memory ) 
+        {
+            if( bin_type == BinType::JIT )
+                val += double( ( u_int64_t )( bin_trtor->RAM ) );
+            else 
+                val += double( RAM_ADDR );
+        }
         
         MOV_R10_VAL( &val, sizeof( double ) );
     

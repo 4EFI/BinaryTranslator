@@ -5,8 +5,20 @@
 #include "config.h"
 
 #include <stdio.h>
+#include <elf.h>
 
 const int StackSize = 1000;
+
+const int PAGE_SIZE = 0x1000;
+const int CODE_SIZE = 0x2000;
+const int DATA_SIZE = 0x2000;
+
+const int LOAD_ADDR = 0x400000;
+const int TEXT_ADDR = 0x401000;
+
+const int RAM_ADDR  = 0x403000;
+const int STK_ADDR  = 0x404000;
+const int LIB_ADDR  = 0x405000;
 
 //-----------------------------------------------------------------------------
 
@@ -48,13 +60,15 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor );
 int BinTrtorToX86( BinTrtor* bin_trtor, int bin_type );
 
 int BinTrtorRun  ( BinTrtor* bin_trtor );
-int BinTrtorToELF( BinTrtor* bin_trtor, const char file_name );
+int BinTrtorToELF( BinTrtor* bin_trtor, const char* file_name );
 
 //-----------------------------------------------------------------------------
 
 int CheckBinCodeSignature( const char* bin_code );
 
 int BinEmit( char* bin_code, int size, ... );
+
+Elf64_Phdr HeaderInit( Elf64_Word p_flags, Elf64_Addr addr );
 
 extern "C" int _printf( const char* str, ... ); 
 
