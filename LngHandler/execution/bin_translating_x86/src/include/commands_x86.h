@@ -173,6 +173,8 @@ DEF_CMD( OUT, 6,
     
     const char* str = "%d\n";
 
+    if( bin_type == BinType::ELF ) str = ( const char* )( STR_ADDR );
+ 
     LOAD_XMM0_FROM_S(); PP_RSP( 8 );
     CVT_XMM0_TO_INT();
     PUSH_R10();
@@ -180,7 +182,8 @@ DEF_CMD( OUT, 6,
     MOV_R10_PTR( str );
     PUSH_R10();
 
-    MOV_R10_PTR( _printf );
+    if( bin_type == BinType::JIT ) { MOV_R10_PTR( _printf     ); } // JIT
+    else                           { MOV_R10_PTR( PRINTF_ADDR ); } // ELF
 
     // call r10
     BIN_EMIT( 3, 0x41, 0xff, 0xd2 ); PP_RSP( 16 );
@@ -196,8 +199,15 @@ DEF_CMD( POP, 7,
 
     if( cmd->immed || cmd->memory )
     {
-        double           val  = double( ( u_int64_t )( bin_trtor->RAM ) );
-        if( cmd->immed ) val += BIN_TRTOR_CMD( i ).val;
+        double val = 0;
+        if( cmd->immed  ) val += BIN_TRTOR_CMD( i ).val;
+        if( cmd->memory ) 
+        {
+            if( bin_type == BinType::JIT )
+                val += double( ( u_int64_t )( bin_trtor->RAM ) );
+            else 
+                val += double( RAM_ADDR );
+        }
         
         MOV_R10_VAL( &val, sizeof( double ) );
     
@@ -296,8 +306,11 @@ DEF_CMD( CALL, 17,
 
     PP_RBP( 8 );
 
+    int offset = 0; 
+    if( bin_type == BinType::ELF ) offset = TEXT_ADDR - u_int64_t( bin_trtor->bin_code_x86 );
+
     // mov r10, ret_ptr
-    MOV_R10_PTR( bin_code_x86_ptr + 12 /*movs code size*/ + 5 /*jmp code size*/ );
+    MOV_R10_PTR( offset + bin_code_x86_ptr + 12 /*movs code size*/ + 5 /*jmp code size*/ );
 
     // mov qword [rbp], r10
     BIN_EMIT( 4, 0x4c, 0x89, 0x55, 0x00 ); 

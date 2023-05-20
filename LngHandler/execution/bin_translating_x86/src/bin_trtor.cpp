@@ -4,6 +4,7 @@
 #include <string.h>
 #include <errno.h>
 #include <sys/mman.h>
+#include <sys/stat.h>
 #include <stdarg.h>
 
 #include "bin_trtor.h"
@@ -122,7 +123,7 @@ int FillJumpsVal( Jmp* jmps_arr, int num )
     return 0;
 }
 
-#define XOR( reg ) BIN_EMIT( 3, 0x48, 0x31, reg );
+#define XOR( reg ) BIN_EMIT( 3, 0x48, 0x31, reg )
 
 #define NULL_REGS()             \
 {                               \
@@ -138,7 +139,7 @@ int BinTrtorToX86( BinTrtor* bin_trtor, int bin_type )
 
     Jmp* jmps_arr = ( Jmp* )calloc( NumLabels, sizeof( Jmp ) );
     int  curr_jmp = 0;
-    
+
 
     // mov r10, stack_ret_addr 
     if( bin_type == BinType::JIT ) { MOV_R10_PTR( bin_trtor->stack_ret ); } // JIT
@@ -205,13 +206,26 @@ int BinTrtorRun( BinTrtor* bin_trtor )
 
 //-----------------------------------------------------------------------------
 
-int BinTrtorToELF( BinTrtor* bin_trtor, const char* file_name )
+int LoadLib( const char* file_name, FILE* exec )
 {
-    char zero_fill[0x4001] = {0};
+    FILE*  lib_file = fopen( file_name, "r" );
+    if(   !lib_file   ) { printf( "Can not open lib file...\n" ); return 0; }
+
+    char* lib_buff = NULL;
+    long long lib_buff_size = ReadAllFile( lib_file, &lib_buff );
+
+    fwrite( lib_buff, 1, lib_buff_size, exec );
+
+    return 1;
+}
+
+int BinTrtorToELF( BinTrtor* bin_trtor, const char* lib_file_name, const char* file_name )
+{
+    char zero_fill[0x5001] = {0};
 
     FILE* exec = fopen( file_name, "w" );
 
-    fwrite( zero_fill, 0x4001, 1, exec );
+    fwrite( zero_fill, 0x5001, 1, exec );
     fseek ( exec, 0x0, SEEK_SET );
 
     Elf64_Ehdr elf_header = 
@@ -232,7 +246,7 @@ int BinTrtorToELF( BinTrtor* bin_trtor, const char* file_name )
         .e_version   = 1          , /* (EV_CURRENT) */
         .e_entry     = TEXT_ADDR  , /* (start address at runtime) */
         .e_phoff     = 64         , /* (bytes into file) */
-        .e_shoff     = 0x4001     , /* (bytes into file) */
+        .e_shoff     = 0x5001     , /* (bytes into file) */
         .e_flags     = 0x0        ,
         .e_ehsize    = 64         , /* (bytes) */
         .e_phentsize = 56         , /* (bytes) */
@@ -255,13 +269,13 @@ int BinTrtorToELF( BinTrtor* bin_trtor, const char* file_name )
     fwrite( &stack_header,     sizeof( stack_header     ), 1, exec );
     fwrite( &library_header,   sizeof( library_header   ), 1, exec );
     
-    fseek ( exec, PAGE_SIZE, SEEK_SET );
+    fseek ( exec, TEXT_ADDR - LOAD_ADDR, SEEK_SET );
     fwrite( bin_trtor->bin_code_x86, 1, bin_trtor->bin_code_x86_size, exec );
 
-    fseek (exec, 0x4000, SEEK_SET);
-    // Add_lib ("programs/lib.out", exec);
+    fseek  ( exec, LIB_ADDR - LOAD_ADDR, SEEK_SET );
+    LoadLib( lib_file_name, exec ); 
 
-    fclose (exec);   
+    fclose( exec );   
     return 1;
 }
 
@@ -321,6 +335,66 @@ Elf64_Phdr HeaderInit( Elf64_Word p_flags, Elf64_Addr addr )
     };
 
     return self;
+}
+
+//-----------------------------------------------------------------------------
+
+// Path without last '/'
+
+char* GetFilePath( const char* full_file_path )
+{
+	int len_full_path = strlen( full_file_path );
+	int len_file_name = 0;
+
+	for( int i = len_full_path - 1; i >= 0; i-- )
+	{
+		if( full_file_path[i] == '/' || 
+			full_file_path[i] == '\\' )
+		{
+			break;
+		}
+
+		len_file_name++;
+	}
+	
+	int len_path = len_full_path - len_file_name;
+	
+	char* path = ( char* )calloc( len_path + 1, sizeof( char ) ); // +1 for '\0'
+
+	if( len_path > 0 ) strncpy( path, full_file_path, len_path - 1 );
+	
+	return path;
+}
+
+//-----------------------------------------------------------------------------
+
+long int GetFileSizeFromStat( FILE* file ) 
+{
+    struct stat fileInfo = {};
+
+    fstat( fileno( file ), &fileInfo );
+
+    long int fileSize = fileInfo.st_size;
+
+    return fileSize;
+} 
+
+//-----------------------------------------------------------------------------
+
+long int ReadAllFile( FILE* file, char** str )
+{
+    long int fileSize = GetFileSizeFromStat( file );
+    
+    *str = ( char* )calloc( sizeof( char ), fileSize + 1 );
+
+    long int rightRead = fread( *str, sizeof( char ), fileSize, file ); 
+
+    if( rightRead < fileSize )
+        realloc( str, sizeof( char ) * ( rightRead + 1 ) ); // Windows specific, \r remove
+
+    (*str)[rightRead] = '\0';
+
+    return rightRead;
 }
 
 //-----------------------------------------------------------------------------

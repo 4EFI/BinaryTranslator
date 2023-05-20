@@ -13,7 +13,8 @@ link : $(OBJ)
 
 %.o : src/%.asm	
 	mkdir -p $(@D)
-	nasm -f elf64 -o $@	$^
+#nasm -f bin -o printf $^
+	nasm -f elf64 -o printf.o $^
 
 clear :
 	rm   -f ./*.o    

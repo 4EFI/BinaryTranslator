@@ -20,6 +20,10 @@ const int RAM_ADDR  = 0x403000;
 const int STK_ADDR  = 0x404000;
 const int LIB_ADDR  = 0x405000;
 
+
+const int STR_ADDR    = 0x405000;  
+const int PRINTF_ADDR = 0x405804;  
+
 //-----------------------------------------------------------------------------
 
 enum BinType { JIT, ELF };
@@ -60,7 +64,7 @@ int BinTrtorParseBinCode( BinTrtor* bin_trtor );
 int BinTrtorToX86( BinTrtor* bin_trtor, int bin_type );
 
 int BinTrtorRun  ( BinTrtor* bin_trtor );
-int BinTrtorToELF( BinTrtor* bin_trtor, const char* file_name );
+int BinTrtorToELF( BinTrtor* bin_trtor, const char* lib_file_name, const char* file_name );
 
 //-----------------------------------------------------------------------------
 
@@ -69,6 +73,11 @@ int CheckBinCodeSignature( const char* bin_code );
 int BinEmit( char* bin_code, int size, ... );
 
 Elf64_Phdr HeaderInit( Elf64_Word p_flags, Elf64_Addr addr );
+
+char* GetFilePath( const char* full_file_path );
+
+long int GetFileSizeFromStat( FILE* file );
+long int ReadAllFile        ( FILE* file, char** str );
 
 extern "C" int _printf( const char* str, ... ); 
 
