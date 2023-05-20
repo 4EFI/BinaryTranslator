@@ -6,6 +6,8 @@
 #include <sys/mman.h>
 #include <sys/stat.h>
 #include <stdarg.h>
+#include <ctime>
+#include <chrono>
 
 #include "bin_trtor.h"
 
@@ -184,6 +186,9 @@ int BinTrtorToX86( BinTrtor* bin_trtor, int bin_type )
 
 //-----------------------------------------------------------------------------
 
+#define PUSH_REGS asm( "push %rax\n push %rbx\n push %rcx\n push %rdx\n push %rsi\n push %rdi\n push %rbp\n push %r10\n");
+#define POP_REGS  asm( "pop %r10\n pop %rbp\n pop %rdi\n pop %rsi\n pop %rdx\n pop %rcx\n pop %rbx\n pop %rax\n" );
+
 int BinTrtorRun( BinTrtor* bin_trtor )
 {
     int is_prot = mprotect( bin_trtor->bin_code_x86, 
@@ -193,9 +198,17 @@ int BinTrtorRun( BinTrtor* bin_trtor )
 
     void ( *exec_function )( void ) = ( void ( * )( void ) )( bin_trtor->bin_code_x86 );
 
-    asm( "push %rax\n push %rbx\n push %rcx\n push %rdx\n push %rsi\n push %rdi\n push %rbp\n push %r10\n");
+    // measure execution time
+    auto start_msr  = std::chrono::steady_clock::now();
+
+    PUSH_REGS
     exec_function();
-    asm( "pop %r10\n pop %rbp\n pop %rdi\n pop %rsi\n pop %rdx\n pop %rcx\n pop %rbx\n pop %rax\n" );
+    POP_REGS
+
+    auto end_msr    = std::chrono::steady_clock::now();
+    auto elapsed_ns = std::chrono::duration_cast<std::chrono::nanoseconds>( end_msr - start_msr );
+
+    printf( "X86-64 exec time in nanoseconds = %lld\n", elapsed_ns.count() );
 
     mprotect( bin_trtor->bin_code_x86, 
               bin_trtor->bin_code_x86_size,

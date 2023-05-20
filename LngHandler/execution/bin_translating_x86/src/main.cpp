@@ -5,12 +5,12 @@
 #include "bin_trtor.h"
 #include "file_algs.h"
 
-#define PROG_TYPE ELF
+#define PROG_TYPE JIT
 
 //-----------------------------------------------------------------------------
 
 int main( int argc, char* argv[] )
-{        
+{            
     const char*    bin_file_name = NULL;
     if( argc > 1 ) bin_file_name = argv[1]; else printf( "Input file have not given...\n" ); 
 

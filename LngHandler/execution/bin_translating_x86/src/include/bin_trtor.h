@@ -20,11 +20,12 @@ const int RAM_ADDR  = 0x403000;
 const int STK_ADDR  = 0x404000;
 const int LIB_ADDR  = 0x405000;
 
-
 const int STR_ADDR    = 0x405000;  
 const int PRINTF_ADDR = 0x405804;  
 
 //-----------------------------------------------------------------------------
+
+#define PROC_CYCLES 
 
 enum BinType { JIT, ELF };
 
