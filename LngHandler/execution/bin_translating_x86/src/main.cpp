@@ -5,7 +5,7 @@
 #include "bin_trtor.h"
 #include "file_algs.h"
 
-#define PROG_TYPE JIT
+#define PROG_TYPE ELF
 
 //-----------------------------------------------------------------------------
 
