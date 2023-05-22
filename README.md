@@ -139,17 +139,14 @@ Elf64_Ehdr elf_header =
     {
         .e_ident = 
         { 
-            /* (EI_NIDENT bytes)     */ 
-            /* [0] EI_MAG:           */ ELFMAG0      , /* 0x7F */
-                                        ELFMAG1      , /* 'E'  */
-                                        ELFMAG2      , /* 'L'  */
-                                        ELFMAG3      , /* 'F'  */
-            /* [4] EI_CLASS:         */ ELFCLASS64   , /*  2   */
-            /* [5] EI_DATA:          */ ELFDATA2LSB  , /*  1   */
-            /* [6] EI_VERSION:       */ EV_CURRENT   , /*  1   */
-            /* [7] EI_OSABI:         */ ELFOSABI_NONE, /*  0   */
-            /* [8] EI_ABIVERSION:    */ 0x0,
-            /* [9-15] EI_PAD:        */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
+            ELFMAG0       , /* [0] EI_MAG     */ /* 0x7F */
+            ELFMAG1       , /* [1] EI_MAG     */ /* 'E'  */
+            ELFMAG2       , /* [2] EI_MAG     */ /* 'L'  */
+            ELFMAG3       , /* [3] EI_MAG     */ /* 'F'  */
+            ELFCLASS64    , /* [4] EI_CLASS   */ /*  2   */
+            ELFDATA2LSB   , /* [5] EI_DATA    */ /*  1   */
+            EV_CURRENT    , /* [6] EI_VERSION */ /*  1   */
+            ELFOSABI_NONE , /* [7] EI_OSABI   */ /*  0   */
         },
         .e_type      = ET_EXEC    , /* 2  */
         .e_machine   = EM_X86_64  , /* 62 */
