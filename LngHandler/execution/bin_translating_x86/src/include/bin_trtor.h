@@ -7,6 +7,8 @@
 #include <stdio.h>
 #include <elf.h>
 
+//-----------------------------------------------------------------------------
+
 const int StackSize = 1000;
 
 const int PAGE_SIZE = 0x1000;
@@ -22,6 +24,8 @@ const int LIB_ADDR  = 0x405000;
 
 const int STR_ADDR    = 0x405000;  
 const int PRINTF_ADDR = 0x405804;  
+
+const int ELF_SIZE = 0x5001;
 
 //-----------------------------------------------------------------------------
 

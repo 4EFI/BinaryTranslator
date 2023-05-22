@@ -234,32 +234,35 @@ int LoadLib( const char* file_name, FILE* exec )
 
 int BinTrtorToELF( BinTrtor* bin_trtor, const char* lib_file_name, const char* file_name )
 {
-    char zero_fill[0x5001] = {0};
+    char zero_fill[ELF_SIZE] = {0};
 
     FILE* exec = fopen( file_name, "w" );
 
-    fwrite( zero_fill, 0x5001, 1, exec );
+    fwrite( zero_fill, ELF_SIZE, 1, exec );
     fseek ( exec, 0x0, SEEK_SET );
 
     Elf64_Ehdr elf_header = 
     {
         .e_ident = 
         { 
-            /* (EI_NIDENT bytes)  */
-            /* [0] EI_MAG:        */ 0x7F,'E','L','F',
-            /* [4] EI_CLASS:      */ 2 , /* (ELFCLASS64)    */
-            /* [5] EI_DATA:       */ 1 , /* (ELFDATA2LSB)   */
-            /* [6] EI_VERSION:    */ 1 , /* (EV_CURRENT)    */
-            /* [7] EI_OSABI:      */ 0 , /* (ELFOSABI_NONE) */
-            /* [8] EI_ABIVERSION: */ 0 ,
-            /* [9-15] EI_PAD:     */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
+            /* (EI_NIDENT bytes)     */ 
+            /* [0] EI_MAG:           */ ELFMAG0      , /* 0x7F */
+                                        ELFMAG1      , /* 'E'  */
+                                        ELFMAG2      , /* 'L'  */
+                                        ELFMAG3      , /* 'F'  */
+            /* [4] EI_CLASS:         */ ELFCLASS64   , /*  2   */
+            /* [5] EI_DATA:          */ ELFDATA2LSB  , /*  1   */
+            /* [6] EI_VERSION:       */ EV_CURRENT   , /*  1   */
+            /* [7] EI_OSABI:         */ ELFOSABI_NONE, /*  0   */
+            /* [8] EI_ABIVERSION:    */ 0,
+            /* [9-15] EI_PAD:        */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
         },
-        .e_type      = 2          , /* (ET_EXEC) */
-        .e_machine   = 62         , /* (EM_X86_64) */
-        .e_version   = 1          , /* (EV_CURRENT) */
+        .e_type      = ET_EXEC    , /* 2  */
+        .e_machine   = EM_X86_64  , /* 62 */
+        .e_version   = EV_CURRENT , /* 1  */
         .e_entry     = TEXT_ADDR  , /* (start address at runtime) */
         .e_phoff     = 64         , /* (bytes into file) */
-        .e_shoff     = 0x5001     , /* (bytes into file) */
+        .e_shoff     = ELF_SIZE   , /* (bytes into file) */
         .e_flags     = 0x0        ,
         .e_ehsize    = 64         , /* (bytes) */
         .e_phentsize = 56         , /* (bytes) */
