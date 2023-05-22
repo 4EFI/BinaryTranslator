@@ -148,7 +148,7 @@ Elf64_Ehdr elf_header =
             /* [5] EI_DATA:          */ ELFDATA2LSB  , /*  1   */
             /* [6] EI_VERSION:       */ EV_CURRENT   , /*  1   */
             /* [7] EI_OSABI:         */ ELFOSABI_NONE, /*  0   */
-            /* [8] EI_ABIVERSION:    */ 0,
+            /* [8] EI_ABIVERSION:    */ 0x0,
             /* [9-15] EI_PAD:        */ 0x0, 0x0, 0x0, 0x0, 0x0, 0x0, 0x0
         },
         .e_type      = ET_EXEC    , /* 2  */
