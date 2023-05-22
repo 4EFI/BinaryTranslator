@@ -152,15 +152,10 @@ Elf64_Ehdr elf_header =
         .e_machine   = EM_X86_64  , /* 62 */
         .e_version   = EV_CURRENT , /* 1  */
         .e_entry     = TEXT_ADDR  , /* (start address at runtime) */
-        .e_phoff     = 64         , /* (bytes into file) */
-        .e_shoff     = ELF_SIZE   , /* (bytes into file) */
-        .e_flags     = 0x0        ,
-        .e_ehsize    = 64         , /* (bytes) */
-        .e_phentsize = 56         , /* (bytes) */
+        .e_phoff     = 64         , /* (program header table offset) */
+        .e_ehsize    = 64         , /* (file header size in bytes) */
+        .e_phentsize = 56         , /* (Size of one program header) */
         .e_phnum     = 5          , /* (program headers) */
-        .e_shentsize = 64         , /* (bytes) */
-        .e_shnum     = 0          , /* (section headers) */
-        .e_shstrndx  = 0         
     };
 ```
 
